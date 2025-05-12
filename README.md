@@ -1,4 +1,3 @@
-
 # 系统音频字幕程序菜单结构说明
 # 通用提示词：首先必须基于.cursorrules的规则约定，不能违背。其次，目前基于默认vosk small模型的在线与离线转录功能均已调试正常。接下来，计划逐步增加新模型开发，一个一个来，先从"ASR模型，sherpa-onnx int8量化模型: "开始（成功后再开始sherpa_std标准模型），其模型路径是："PATH:"C:\Users\crige\RealtimeTrans\vosk-api\models\sherpa-onnx"（注意int8 and std model are in the identical path），注意统一使用config配置文件来调度，config\config.json。
 
@@ -208,4 +207,3 @@ project_root/
 │
 └── main.py               # 主程序入口
 ```
-
