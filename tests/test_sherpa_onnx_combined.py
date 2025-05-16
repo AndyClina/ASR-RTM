@@ -35,11 +35,10 @@ def test_sherpa_onnx_combined():
     
     # 初始化日志工具
     sherpa_logger.setup()
-    sherpa_log_file = sherpa_logger.get_log_file()
-    print(f"Sherpa-ONNX 日志文件: {sherpa_log_file}")
+    sherpa_log_file = sherpa_logger.get_log_file()    print(f"Sherpa-ONNX 日志文件: {sherpa_log_file}")
     
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 确定模型文件名
     use_int8 = True

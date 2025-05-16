@@ -148,7 +148,7 @@ def test_file_transcription():
     logger.info(f"可用的引擎列表: {engines}")
 
     # 测试文件路径
-    test_file = r"C:\Users\crige\RealtimeTrans\vosk-api-bak-J\mytest.mp4"
+    test_file = r"C:\Users\crige\tests\mytest.mp4"
     if not os.path.exists(test_file):
         logger.error(f"测试文件不存在: {test_file}")
         return

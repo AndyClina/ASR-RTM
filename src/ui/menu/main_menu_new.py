@@ -2,6 +2,7 @@
 主菜单模块
 负责创建和管理应用程序的主菜单栏
 """
+import traceback
 from PyQt5.QtWidgets import QMenuBar
 
 from src.utils.config_manager import config_manager
@@ -29,13 +30,6 @@ class MainMenu(QMenuBar):
         self.config = config_manager
 
         # 设置样式
-        self._set_style()
-
-        # 创建子菜单
-        self.create_menus()
-
-    def _set_style(self):
-        """设置菜单样式"""
         self.setStyleSheet("""
             QMenuBar {
                 background-color: rgba(60, 60, 60, 255);
@@ -66,6 +60,9 @@ class MainMenu(QMenuBar):
             }
         """)
 
+        # 创建子菜单
+        self.create_menus()
+
     def create_menus(self):
         """创建所有子菜单"""
         try:
@@ -88,7 +85,6 @@ class MainMenu(QMenuBar):
             logger.info("所有菜单创建完成")
         except Exception as e:
             logger.error(f"创建菜单时出错: {str(e)}")
-            import traceback
             logger.error(traceback.format_exc())
 
     def connect_signals(self, main_window):
@@ -114,7 +110,6 @@ class MainMenu(QMenuBar):
             logger.info("所有菜单信号连接完成")
         except Exception as e:
             logger.error(f"连接菜单信号时出错: {str(e)}")
-            import traceback
             logger.error(traceback.format_exc())
 
     def update_menu_state(self, is_recording=False):
@@ -125,18 +120,15 @@ class MainMenu(QMenuBar):
             is_recording: 是否正在录音
         """
         try:
+            # 在录音时禁用某些菜单
+            self.transcription_menu.setEnabled(True)  # 转录菜单始终可用，内部会禁用特定项
+
             # 更新子菜单状态
             self.transcription_menu.update_menu_state(is_recording)
-            
-            # 在录音时禁用扩展管理菜单
             self.extension_menu.update_menu_state(is_recording)
-            
-            # UI设置和帮助菜单始终可用
             self.ui_settings_menu.update_menu_state(is_recording)
-            self.help_menu.update_menu_state(is_recording)
-            
+
             logger.debug(f"菜单状态已更新，录音状态: {is_recording}")
         except Exception as e:
             logger.error(f"更新菜单状态时出错: {str(e)}")
-            import traceback
             logger.error(traceback.format_exc())

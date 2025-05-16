@@ -36,10 +36,8 @@ def test_sherpa_2023_06_26_premium_persistent():
     # 初始化日志工具
     sherpa_logger.setup()
     sherpa_log_file = sherpa_logger.get_log_file()
-    print(f"Sherpa-ONNX 日志文件: {sherpa_log_file}")
-
-    # 模型路径
-    model_path = r"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
+    print(f"Sherpa-ONNX 日志文件: {sherpa_log_file}")    # 模型路径
+    model_path = r"C:\Users\crige\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
 
     # 确定模型文件名 - 使用高级版本，不使用int8量化版本
     encoder_file = "encoder-epoch-99-avg-1-chunk-16-left-128.onnx"  # 高级模型文件

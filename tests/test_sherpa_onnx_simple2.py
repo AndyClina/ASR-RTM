@@ -27,7 +27,7 @@ def test_sherpa_onnx_model():
     print("开始测试 Sherpa-ONNX 模型...")
     
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 测试 int8 模型
     print("\n=== 测试 Sherpa-ONNX int8 模型 ===")

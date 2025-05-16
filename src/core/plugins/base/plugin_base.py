@@ -10,39 +10,100 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+import logging
+from abc import ABC, abstractmethod
+from typing import Dict, Any, Optional
+
 class PluginBase(ABC):
-    """插件基础类"""
+    """插件基类"""
 
     def __init__(self):
         """初始化插件"""
+        self.logger = logging.getLogger(self.__class__.__name__)
         self._config: Dict[str, Any] = {}
         self._enabled: bool = False
         self._initialized: bool = False
+        self.name = None
 
-    def initialize(self) -> bool:
-        """初始化插件
+    @property
+    def config(self) -> Dict[str, Any]:
+        """获取插件配置"""
+        return self._config
+
+    @abstractmethod
+    def get_id(self) -> str:
+        """获取插件ID
+
+        Returns:
+            str: 插件ID
+        """
+        pass
+
+    @abstractmethod
+    def get_name(self) -> str:
+        """获取插件名称
+
+        Returns:
+            str: 插件名称
+        """
+        pass
+
+    @abstractmethod
+    def get_version(self) -> str:
+        """获取插件版本
+
+        Returns:
+            str: 插件版本
+        """
+        pass
+
+    @abstractmethod
+    def get_description(self) -> str:
+        """获取插件描述
+
+        Returns:
+            str: 插件描述
+        """
+        pass
+
+    @abstractmethod
+    def get_author(self) -> str:
+        """获取插件作者
+
+        Returns:
+            str: 插件作者
+        """
+        pass
+
+    @abstractmethod
+    def setup(self) -> bool:
+        """设置插件
+
+        Returns:
+            bool: 设置是否成功
+        """
+        pass
+
+    @abstractmethod
+    def teardown(self) -> bool:
+        """清理插件
+
+        Returns:
+            bool: 清理是否成功
+        """
+        pass
+
+    @abstractmethod
+    def initialize(self, config: Dict[str, Any]) -> bool:
+        """初始化插件，传入配置参数
+
+        Args:
+            config: 配置字典
 
         Returns:
             bool: 初始化是否成功
         """
-        try:
-            if self._initialized:
-                logger.warning(f"插件已初始化: {self.get_id()}")
-                return True
-
-            # 调用子类的setup方法
-            if not self.setup():
-                logger.error(f"插件初始化失败: {self.get_id()}")
-                return False
-
-            self._initialized = True
-            logger.info(f"插件初始化成功: {self.get_id()}")
-            return True
-
-        except Exception as e:
-            logger.error(f"插件初始化时出错: {self.get_id()}, 错误: {str(e)}")
-            logger.error(traceback.format_exc())
-            return False
+        pass
 
     def cleanup(self) -> bool:
         """清理插件资源
@@ -108,7 +169,7 @@ class PluginBase(ABC):
                 return True
 
             # 如果未初始化，先初始化
-            if not self._initialized and not self.initialize():
+            if not self._initialized and not self.initialize(self._config):
                 logger.error(f"插件启用失败，初始化失败: {self.get_id()}")
                 return False
 
@@ -193,69 +254,6 @@ class PluginBase(ABC):
             "initialized": self.is_initialized()
         }
 
-    @abstractmethod
-    def get_id(self) -> str:
-        """获取插件ID
-
-        Returns:
-            str: 插件ID
-        """
-        pass
-
-    @abstractmethod
-    def get_name(self) -> str:
-        """获取插件名称
-
-        Returns:
-            str: 插件名称
-        """
-        pass
-
-    @abstractmethod
-    def get_version(self) -> str:
-        """获取插件版本
-
-        Returns:
-            str: 插件版本
-        """
-        pass
-
-    @abstractmethod
-    def get_description(self) -> str:
-        """获取插件描述
-
-        Returns:
-            str: 插件描述
-        """
-        pass
-
-    @abstractmethod
-    def get_author(self) -> str:
-        """获取插件作者
-
-        Returns:
-            str: 插件作者
-        """
-        pass
-
-    @abstractmethod
-    def setup(self) -> bool:
-        """设置插件
-
-        Returns:
-            bool: 设置是否成功
-        """
-        pass
-
-    @abstractmethod
-    def teardown(self) -> bool:
-        """清理插件
-
-        Returns:
-            bool: 清理是否成功
-        """
-        pass
-
     def reconfigure(self) -> bool:
         """重新配置插件
 
@@ -266,7 +264,7 @@ class PluginBase(ABC):
         if not self.cleanup():
             return False
 
-        return self.initialize()
+        return self.initialize(self._config)
 
 # 为了向后兼容，保留PluginInterface类
 class PluginInterface(PluginBase):
@@ -291,4 +289,7 @@ class PluginInterface(PluginBase):
         return True
 
     def teardown(self) -> bool:
+        return True
+
+    def initialize(self, config: Dict[str, Any]) -> bool:
         return True

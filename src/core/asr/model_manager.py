@@ -105,44 +105,88 @@ class ASRModelManager(QObject):
             bool: 验证是否通过
         """
         try:
+            logger.info("===== 开始验证模型文件 =====")
+            logger.info(f"当前工作目录: {os.getcwd()}")
+            logger.info(f"模型路径: {model_path}")
+            logger.info(f"传入的模型类型: {model_type}")
+            logger.info(f"当前模型类型: {self.model_type}")
+
             if model_type is None:
                 model_type = self.model_type
-
-            logger.info(f"验证模型文件: {model_path}, 类型: {model_type}")
+                logger.info(f"使用当前模型类型: {model_type}")
 
             # 检查基本路径
             if not os.path.exists(model_path):
                 logger.error(f"模型路径不存在: {model_path}")
                 return False
+            logger.info(f"模型路径存在: {model_path}")
+            logger.info(f"是否为目录: {os.path.isdir(model_path)}")
 
             # 根据模型类型选择不同的验证方式
             if model_type == "vosk_small" or "vosk" in model_path.lower():
+                logger.info(f"验证 Vosk 模型: {model_path}")
+
                 # Vosk模型验证：检查目录是否存在以及是否包含必要的子目录和文件
                 if os.path.exists(model_path) and os.path.isdir(model_path):
                     # 检查am子目录是否存在
                     am_dir = os.path.join(model_path, "am")
+                    logger.info(f"检查 am 目录: {am_dir}")
+                    logger.info(f"am 目录是否存在: {os.path.exists(am_dir)}")
+                    logger.info(f"am 是否为目录: {os.path.isdir(am_dir) if os.path.exists(am_dir) else False}")
+
                     if os.path.exists(am_dir) and os.path.isdir(am_dir):
                         # 检查final.mdl文件是否存在于am子目录中
                         final_mdl = os.path.join(am_dir, "final.mdl")
+                        logger.info(f"检查 final.mdl 文件: {final_mdl}")
+                        logger.info(f"final.mdl 文件是否存在: {os.path.exists(final_mdl)}")
+
                         if os.path.exists(final_mdl):
                             logger.info(f"Vosk模型验证通过: {model_path}")
                             return True
+
                         logger.error(f"Vosk模型缺少必要文件 am/final.mdl: {model_path}")
+
+                        # 列出am目录下的文件
+                        try:
+                            am_files = os.listdir(am_dir)
+                            logger.info(f"am 目录下的文件: {am_files}")
+                        except Exception as e:
+                            logger.error(f"列出 am 目录下的文件时出错: {str(e)}")
+
                         return False
+
                     logger.error(f"Vosk模型缺少必要目录 am: {model_path}")
+
+                    # 列出模型目录下的文件和目录
+                    try:
+                        model_files = os.listdir(model_path)
+                        logger.info(f"模型目录下的文件和目录: {model_files}")
+                    except Exception as e:
+                        logger.error(f"列出模型目录下的文件和目录时出错: {str(e)}")
+
                     return False
+
                 logger.error(f"Vosk模型目录无效: {model_path}")
                 return False
 
             # Sherpa模型验证逻辑
             elif model_type and model_type.startswith('sherpa'):
+                logger.info(f"验证 Sherpa 模型: {model_path}")
+
                 model_config = self.models_config.get(model_type, {})
+                logger.info(f"模型配置: {model_config}")
+
                 config_model_type = model_config.get("type", "standard").lower()
                 is_int8 = config_model_type == "int8"
                 is_0626 = "0626" in model_type
 
+                logger.info(f"配置模型类型: {config_model_type}")
+                logger.info(f"是否为 int8 模型: {is_int8}")
+                logger.info(f"是否为 0626 模型: {is_0626}")
+
                 # 根据模型类型选择文件名
                 if is_0626:
+                    logger.info("使用 0626 模型文件名")
                     base_names = ["encoder", "decoder", "joiner"]
                     required_files = []
                     for base in base_names:
@@ -153,6 +197,7 @@ class ASRModelManager(QObject):
                             required_files.append(f"{base}{suffix}.onnx")
                     required_files.append("tokens.txt")
                 else:
+                    logger.info("使用标准模型文件名")
                     base_names = ["encoder", "decoder", "joiner"]
                     required_files = []
                     for base in base_names:
@@ -162,13 +207,30 @@ class ASRModelManager(QObject):
                             required_files.append(f"{base}-epoch-99-avg-1.onnx")
                     required_files.append("tokens.txt")
 
+                logger.info(f"需要验证的文件: {required_files}")
+
                 # 验证所有必需文件
+                all_files_exist = True
                 for file in required_files:
                     file_path = os.path.join(model_path, file)
+                    logger.info(f"检查文件: {file_path}")
+                    logger.info(f"文件是否存在: {os.path.exists(file_path)}")
+
                     if not os.path.exists(file_path):
                         logger.error(f"模型文件不存在: {file_path}")
-                        return False
-                    logger.debug(f"找到模型文件: {file_path}")
+                        all_files_exist = False
+                    else:
+                        logger.info(f"找到模型文件: {file_path}")
+
+                if not all_files_exist:
+                    # 列出模型目录下的文件
+                    try:
+                        model_files = os.listdir(model_path)
+                        logger.info(f"模型目录下的文件: {model_files}")
+                    except Exception as e:
+                        logger.error(f"列出模型目录下的文件时出错: {str(e)}")
+
+                    return False
 
                 logger.info(f"Sherpa模型文件验证通过: {model_path}")
                 return True
@@ -185,19 +247,52 @@ class ASRModelManager(QObject):
     def load_model(self, model_name: str) -> bool:
         """加载ASR模型"""
         try:
-            logger.info(f"开始加载模型: {model_name}")
-
-            # 调试信息使用logger而不是print，减少控制台输出
-            logger.debug(f"尝试加载模型: {model_name}")
+            logger.info("===== 开始加载模型 =====")
+            logger.info(f"当前工作目录: {os.getcwd()}")
+            logger.info(f"模型名称: {model_name}")
+            logger.info(f"当前模型类型: {self.model_type}")
+            logger.info(f"模型配置: {self.models_config}")
 
             # 检查模型是否存在
-            if model_name not in self.models_config:
+            if not self.models_config or model_name not in self.models_config:
                 logger.error(f"错误: 模型 {model_name} 在配置中不存在")
-                return False
+                logger.info(f"可用的模型: {list(self.models_config.keys())}")
+
+                # 尝试从配置管理器重新获取模型配置
+                self.models_config = self.config_manager.get_all_models()
+                logger.info(f"重新获取模型配置: {self.models_config}")
+
+                # 再次检查模型是否存在
+                if not self.models_config or model_name not in self.models_config:
+                    # 如果仍然找不到，尝试直接从配置文件中获取
+                    model_config = self.config_manager.get_config('asr', model_name)
+                    if model_config:
+                        # 如果找到了，将其添加到模型配置中
+                        self.models_config[model_name] = model_config
+                        logger.info(f"从配置文件中直接获取模型配置: {model_config}")
+                    else:
+                        # 如果仍然找不到，使用硬编码的配置
+                        logger.warning("使用硬编码的模型配置")
+                        self.models_config[model_name] = {
+                            "path": "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15",
+                            "type": "standard",
+                            "enabled": True,
+                            "config": {
+                                "sample_rate": 16000,
+                                "use_words": True,
+                                "channels": 1,
+                                "buffer_size": 4000
+                            }
+                        }
+
+                # 如果仍然找不到，返回失败
+                if model_name not in self.models_config:
+                    logger.error(f"错误: 无法找到模型 {model_name} 的配置")
+                    return False
 
             # 获取模型配置
             model_config = self.models_config[model_name]
-            logger.debug(f"找到模型配置: {model_name}")
+            logger.info(f"找到模型配置: {model_config}")
 
             # 获取模型路径
             model_path = model_config.get('path', '')
@@ -205,23 +300,90 @@ class ASRModelManager(QObject):
                 logger.error(f"错误: 模型 {model_name} 路径为空")
                 return False
 
-            logger.debug(f"模型路径: {model_path}")
+            logger.info(f"模型路径: {model_path}")
+            logger.info(f"模型路径是否为绝对路径: {os.path.isabs(model_path)}")
+            logger.info(f"模型路径是否存在: {os.path.exists(model_path)}")
 
             # 验证模型路径和文件
             if not os.path.exists(model_path):
-                logger.error(f"错误: 模型路径不存在: {model_path}")
-                return False
+                logger.warning(f"模型路径不存在: {model_path}")
+
+                # 检查是否是相对路径
+                if not os.path.isabs(model_path):
+                    # 尝试从项目根目录解析相对路径
+                    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+                    logger.info(f"项目根目录: {project_root}")
+
+                    abs_path = os.path.join(project_root, model_path)
+                    logger.info(f"尝试将相对路径 {model_path} 转换为绝对路径: {abs_path}")
+                    logger.info(f"转换后的路径是否存在: {os.path.exists(abs_path)}")
+
+                    if os.path.exists(abs_path):
+                        logger.info(f"找到绝对路径: {abs_path}")
+                        model_path = abs_path
+                        # 更新配置中的路径
+                        model_config['path'] = abs_path
+                        logger.info(f"已更新配置中的路径为: {abs_path}")
+                    else:
+                        logger.error(f"错误: 模型路径不存在: {model_path} 或 {abs_path}")
+
+                        # 尝试使用硬编码的绝对路径
+                        hardcoded_path = "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
+                        logger.info(f"尝试使用硬编码的绝对路径: {hardcoded_path}")
+                        logger.info(f"硬编码的路径是否存在: {os.path.exists(hardcoded_path)}")
+
+                        if os.path.exists(hardcoded_path):
+                            logger.info(f"硬编码的绝对路径存在: {hardcoded_path}")
+                            model_path = hardcoded_path
+                            model_config['path'] = hardcoded_path
+                            logger.info(f"已更新配置中的路径为: {hardcoded_path}")
+                        else:
+                            logger.error(f"硬编码的绝对路径也不存在: {hardcoded_path}")
+
+                            # 列出项目根目录下的文件和目录
+                            logger.info(f"列出项目根目录下的文件和目录:")
+                            try:
+                                for root, dirs, _ in os.walk(project_root, topdown=True, onerror=None, followlinks=False):
+                                    if "models" in dirs:
+                                        logger.info(f"找到 models 目录: {os.path.join(root, 'models')}")
+                                        models_dir = os.path.join(root, 'models')
+                                        if os.path.exists(os.path.join(models_dir, 'asr')):
+                                            logger.info(f"找到 asr 目录: {os.path.join(models_dir, 'asr')}")
+                                    break  # 只列出顶层目录
+
+                                # 检查 C:\Users\crige\models 目录
+                                user_models_dir = "C:\\Users\\crige\\models"
+                                if os.path.exists(user_models_dir):
+                                    logger.info(f"找到用户模型目录: {user_models_dir}")
+                                    if os.path.exists(os.path.join(user_models_dir, 'asr')):
+                                        logger.info(f"找到 asr 目录: {os.path.join(user_models_dir, 'asr')}")
+                                        if os.path.exists(os.path.join(user_models_dir, 'asr', 'vosk')):
+                                            logger.info(f"找到 vosk 目录: {os.path.join(user_models_dir, 'asr', 'vosk')}")
+                                            vosk_models = os.listdir(os.path.join(user_models_dir, 'asr', 'vosk'))
+                                            logger.info(f"vosk 目录下的模型: {vosk_models}")
+                            except Exception as e:
+                                logger.error(f"列出目录时出错: {str(e)}")
+
+                            return False
+                else:
+                    logger.error(f"错误: 模型路径不存在: {model_path}")
+                    return False
 
             # 记录当前尝试加载的模型类型
+            logger.info(f"最终使用的模型路径: {model_path}")
+            logger.info(f"路径是否存在: {os.path.exists(model_path)}")
             logger.info(f"尝试加载模型类型: {model_name}，当前模型类型: {self.model_type}")
 
             # 验证模型文件时传入模型名称，确保使用正确的验证逻辑
+            logger.info(f"开始验证模型文件: {model_path}, 模型类型: {model_name}")
             if not self.validate_model_files(model_path, model_name):
                 logger.error(f"错误: 模型路径验证失败: {model_path}")
                 return False
+            logger.info(f"模型文件验证通过: {model_path}")
 
             # 更新当前模型信息
             self.current_model_type = model_name
+            logger.info(f"已更新当前模型类型为: {model_name}")
 
             # 对于vosk_small模型，强制设置model_type为vosk_small
             if model_name == "vosk_small":
@@ -229,22 +391,28 @@ class ASRModelManager(QObject):
                 logger.info("强制设置model_type为vosk_small")
             else:
                 self.model_type = model_name  # 确保model_type与current_model_type一致
+                logger.info(f"设置model_type为: {model_name}")
 
             # 初始化引擎
+            logger.info(f"开始初始化引擎: {model_name}")
             if not self.initialize_engine(model_name):
                 logger.error(f"初始化引擎失败: {model_name}")
                 return False
+            logger.info(f"引擎初始化成功: {model_name}")
 
             # 设置current_model为True，表示模型已加载
             self.current_model = True
+            logger.info("已设置current_model为True")
 
             logger.info(f"模型加载成功: {model_name}")
 
             # 发射模型加载成功信号
             self.model_loaded.emit(True)
+            logger.info("已发射模型加载成功信号")
 
             # 更新状态
             self.signals.status_updated.emit(f"已加载模型: {model_name}")
+            logger.info(f"已更新状态: 已加载模型: {model_name}")
 
             return True
 
@@ -255,9 +423,11 @@ class ASRModelManager(QObject):
 
             # 发射模型加载失败信号
             self.model_loaded.emit(False)
+            logger.info("已发射模型加载失败信号")
 
             # 发射错误信号
             self.error_occurred.emit(error_msg)
+            logger.info(f"已发射错误信号: {error_msg}")
 
             return False
 
@@ -579,10 +749,13 @@ class ASRModelManager(QObject):
             sherpa_logger = DummyLogger()
 
         try:
-            # 直接从 models_config 获取模型配置
-            sherpa_logger.info(f"初始化引擎: {engine_type}")
-            sherpa_logger.debug(f"models_config = {self.models_config}")
+            sherpa_logger.info("===== 开始初始化引擎 =====")
+            sherpa_logger.info(f"当前工作目录: {os.getcwd()}")
+            sherpa_logger.info(f"引擎类型: {engine_type}")
             sherpa_logger.info(f"当前模型类型: {self.model_type}")
+
+            # 直接从 models_config 获取模型配置
+            sherpa_logger.debug(f"models_config 键: {list(self.models_config.keys())}")
 
             # 检查模型类型和引擎类型是否一致
             if self.model_type and self.model_type != engine_type:
@@ -599,44 +772,75 @@ class ASRModelManager(QObject):
                     engine_type = self.model_type
                     sherpa_logger.info(f"引擎类型已从 {old_engine_type} 更新为: {engine_type}")
 
+            # 检查引擎类型是否在配置中存在
+            sherpa_logger.info(f"检查引擎类型 {engine_type} 是否在配置中存在")
             if engine_type not in self.models_config:
                 sherpa_logger.error(f"引擎 {engine_type} 在配置中不存在")
+                sherpa_logger.info(f"可用的引擎类型: {list(self.models_config.keys())}")
                 return False
+            sherpa_logger.info(f"引擎类型 {engine_type} 在配置中存在")
 
+            # 获取模型配置
             model_config = self.models_config[engine_type]
-            sherpa_logger.debug(f"模型配置: {model_config}")
+            sherpa_logger.info(f"模型配置: {model_config}")
 
+            # 检查模型是否启用
             if not model_config or not model_config.get("enabled", False):
                 sherpa_logger.error(f"引擎 {engine_type} 未启用或未配置")
                 return False
+            sherpa_logger.info(f"引擎 {engine_type} 已启用")
 
             # 记录当前引擎状态
             sherpa_logger.info(f"当前引擎: {type(self.current_engine).__name__ if self.current_engine else None}")
 
             # 初始化引擎
             if engine_type == "vosk" or engine_type == "vosk_small":
+                sherpa_logger.info(f"初始化 Vosk 引擎")
                 sherpa_logger.info(f"创建 VoskASR 实例，路径: {model_config['path']}")
+
                 # 检查模型路径是否存在
+                sherpa_logger.info(f"检查模型路径是否存在: {model_config['path']}")
+                sherpa_logger.info(f"模型路径是否存在: {os.path.exists(model_config['path'])}")
+
                 if not os.path.exists(model_config["path"]):
                     sherpa_logger.error(f"Vosk 模型路径不存在: {model_config['path']}")
-                    return False
+
+                    # 尝试使用硬编码的绝对路径
+                    hardcoded_path = "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
+                    sherpa_logger.info(f"尝试使用硬编码的绝对路径: {hardcoded_path}")
+                    sherpa_logger.info(f"硬编码的路径是否存在: {os.path.exists(hardcoded_path)}")
+
+                    if os.path.exists(hardcoded_path):
+                        sherpa_logger.info(f"硬编码的绝对路径存在，使用此路径: {hardcoded_path}")
+                        model_config["path"] = hardcoded_path
+                    else:
+                        sherpa_logger.error(f"硬编码的绝对路径也不存在: {hardcoded_path}")
+                        return False
 
                 # 使用更新后的验证方法，明确传入模型类型
+                sherpa_logger.info(f"验证模型路径: {model_config['path']}")
                 if not self._validate_model_path(model_config["path"], engine_type):
                     sherpa_logger.error(f"Vosk 模型路径验证失败: {model_config['path']}")
                     return False
+                sherpa_logger.info(f"模型路径验证通过: {model_config['path']}")
 
                 try:
                     # 创建 VoskASR 实例
+                    sherpa_logger.info(f"创建 VoskASR 实例，路径: {model_config['path']}")
                     self.current_engine = VoskASR(model_config["path"])
                     sherpa_logger.info(f"VoskASR 实例创建成功: {self.current_engine}")
 
                     # 检查引擎是否成功初始化
+                    sherpa_logger.info(f"检查引擎是否成功初始化")
+                    sherpa_logger.info(f"model 是否存在: {self.current_engine.model is not None}")
+                    sherpa_logger.info(f"recognizer 是否存在: {self.current_engine.recognizer is not None}")
+
                     if not self.current_engine.model or not self.current_engine.recognizer:
                         error_msg = "VoskASR 引擎初始化失败，模型或识别器为空"
                         sherpa_logger.error(error_msg)
                         print(error_msg)
                         return False
+                    sherpa_logger.info(f"引擎初始化成功")
 
                     # 为VoskASR实例添加engine_type属性，确保与模型类型一致
                     self.current_engine.engine_type = "vosk_small"
@@ -654,17 +858,24 @@ class ASRModelManager(QObject):
                     return False
 
             elif engine_type.startswith("sherpa"):
+                sherpa_logger.info(f"初始化 Sherpa-ONNX 引擎")
                 sherpa_logger.info(f"创建 SherpaOnnxASR 实例，路径: {model_config.get('path', '')}")
 
                 # 检查模型路径是否存在
+                sherpa_logger.info(f"检查模型路径是否存在: {model_config.get('path', '')}")
+                sherpa_logger.info(f"模型路径是否存在: {os.path.exists(model_config.get('path', ''))}")
+
                 if not os.path.exists(model_config["path"]):
                     sherpa_logger.error(f"Sherpa-ONNX 模型路径不存在: {model_config.get('path', '未知路径')}")
                     return False
+                sherpa_logger.info(f"模型路径存在: {model_config['path']}")
 
                 # 使用更新后的验证方法，明确传入模型类型
+                sherpa_logger.info(f"验证模型路径: {model_config['path']}")
                 if not self._validate_model_path(model_config["path"], engine_type):
                     sherpa_logger.error(f"Sherpa-ONNX 模型路径验证失败: {model_config['path']}")
                     return False
+                sherpa_logger.info(f"模型路径验证通过: {model_config['path']}")
 
                 # 检查模型类型
                 if engine_type == "sherpa_0626_int8":
@@ -1158,19 +1369,19 @@ class ASRModelManager(QObject):
         else:
             engines["vosk_small"] = False
 
-        # 检查 sherpa_onnx_int8 引擎
-        if "sherpa_onnx_int8" in self.models_config:
-            model_config = self.models_config["sherpa_onnx_int8"]
-            engines["sherpa_onnx_int8"] = bool(model_config and model_config.get("enabled", False))
+        # 检查 sherpa_0220_int8 引擎
+        if "sherpa_0220_int8" in self.models_config:
+            model_config = self.models_config["sherpa_0220_int8"]
+            engines["sherpa_0220_int8"] = bool(model_config and model_config.get("enabled", False))
         else:
-            engines["sherpa_onnx_int8"] = False
+            engines["sherpa_0220_int8"] = False
 
-        # 检查 sherpa_onnx_std 引擎
-        if "sherpa_onnx_std" in self.models_config:
-            model_config = self.models_config["sherpa_onnx_std"]
-            engines["sherpa_onnx_std"] = bool(model_config and model_config.get("enabled", False))
+        # 检查 sherpa_0220_std 引擎
+        if "sherpa_0220_std" in self.models_config:
+            model_config = self.models_config["sherpa_0220_std"]
+            engines["sherpa_0220_std"] = bool(model_config and model_config.get("enabled", False))
         else:
-            engines["sherpa_onnx_std"] = False
+            engines["sherpa_0220_std"] = False
 
         # 检查 sherpa_0626_int8 引擎
         if "sherpa_0626_int8" in self.models_config:

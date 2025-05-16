@@ -38,7 +38,7 @@ class PluginManager:
 
         self._initialized = True
 
-    def configure(self, config: Dict[str, Any] = None) -> None:
+    def configure(self, config: Optional[Dict[str, Any]] = None) -> None:
         """配置插件管理器
 
         Args:
@@ -63,6 +63,9 @@ class PluginManager:
     def _load_plugin_metadata(self) -> None:
         """加载插件元数据"""
         try:
+            # 清空现有元数据
+            self.plugin_metadata = {}
+
             # 遍历插件目录
             for plugin_dir in self.plugin_dirs:
                 if not os.path.exists(plugin_dir):
@@ -70,7 +73,7 @@ class PluginManager:
                     continue
 
                 # 遍历子目录
-                for root, dirs, files in os.walk(plugin_dir):
+                for root, _, _ in os.walk(plugin_dir):
                     # 查找metadata.json文件
                     metadata_file = os.path.join(root, "metadata.json")
                     if os.path.exists(metadata_file):
@@ -84,13 +87,41 @@ class PluginManager:
                                 logger.warning(f"插件元数据缺少ID: {metadata_file}")
                                 continue
 
+                            # 检查必要的元数据字段
+                            required_fields = ['name', 'version', 'type', 'module', 'class']
+                            missing_fields = [field for field in required_fields if field not in metadata]
+                            if missing_fields:
+                                logger.warning(f"插件元数据缺少必要字段 {missing_fields}: {metadata_file}")
+                                continue
+
                             # 添加插件路径
                             metadata['path'] = os.path.dirname(metadata_file)
+
+                            # 检查插件类型
+                            plugin_type = metadata.get('type')
+                            if not plugin_type:
+                                logger.warning(f"插件元数据缺少类型: {metadata_file}")
+                                continue
+
+                            # 检查插件模块
+                            module_path = metadata.get('module')
+                            if not module_path:
+                                logger.warning(f"插件元数据缺少模块路径: {metadata_file}")
+                                continue
+
+                            # 检查插件类名
+                            class_name = metadata.get('class')
+                            if not class_name:
+                                logger.warning(f"插件元数据缺少类名: {metadata_file}")
+                                continue
 
                             # 保存元数据
                             self.plugin_metadata[plugin_id] = metadata
                             logger.debug(f"已加载插件元数据: {plugin_id}")
 
+                        except json.JSONDecodeError as e:
+                            logger.error(f"解析插件元数据失败: {metadata_file}, 错误: {str(e)}")
+                            logger.error(traceback.format_exc())
                         except Exception as e:
                             logger.error(f"加载插件元数据失败: {metadata_file}, 错误: {str(e)}")
                             logger.error(traceback.format_exc())
@@ -187,8 +218,11 @@ class PluginManager:
                 logger.error(f"注册插件失败: {plugin_id}")
                 return False
 
+            # 获取插件配置
+            plugin_config = self.config_manager.get_plugin_config(plugin_id) or {}
+
             # 加载插件
-            if not self.registry.load_plugin(plugin_id):
+            if not self.registry.load_plugin(plugin_id, plugin_config):
                 logger.error(f"加载插件失败: {plugin_id}")
                 return False
 
@@ -258,7 +292,7 @@ class PluginManager:
                 self.unload_plugin(plugin_id)
 
             # 加载启用的插件
-            for plugin_id, metadata in self.plugin_metadata.items():
+            for plugin_id, _ in self.plugin_metadata.items():
                 # 获取插件配置
                 plugin_config = self.config_manager.get_plugin_config(plugin_id) or {}
 

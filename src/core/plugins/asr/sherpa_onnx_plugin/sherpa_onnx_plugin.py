@@ -7,8 +7,8 @@ Sherpa-ONNX 插件模块
 - sherpa-onnx-streaming-zipformer-en-2023-06-26（英语专用模型）
 
 每种模型都支持标准版和int8量化版本，共四种变体：
-1. sherpa_onnx_std: 2023-02-20标准版（中英双语）
-2. sherpa_onnx_int8: 2023-02-20量化版（中英双语）
+1. sherpa_0220_std: 2023-02-20标准版（中英双语）
+2. sherpa_0220_int8: 2023-02-20量化版（中英双语）
 3. sherpa_0626_std: 2023-06-26标准版（英语专用）
 4. sherpa_0626_int8: 2023-06-26量化版（英语专用）
 
@@ -111,7 +111,7 @@ class SherpaOnnxPlugin(PluginBase):
         示例:
             ```python
             config = {
-                'path': 'models/asr/sherpa-onnx-streaming-zipformer-en-2023-06-26',
+                'path': '/path/to/models/asr/sherpa-onnx-streaming-zipformer-en-2023-06-26',  # 使用配置文件中的路径，不要硬编码
                 'type': 'standard',
                 'num_threads': 4
             }
@@ -128,14 +128,14 @@ class SherpaOnnxPlugin(PluginBase):
         self.model_dir = None
         self.is_int8 = False
         self.is_0626 = False  # 是否是2023-06-26模型
-        self.engine_type = "sherpa_onnx_std"  # 默认使用标准模型
+        self.engine_type = "sherpa_0220_std"  # 默认使用标准模型
         self.temp_files = []  # 用于存储临时文件路径
         self._model_version = "2023-02-20"  # 默认使用2023-02-20模型
         self.logger = logging.getLogger(self.__class__.__name__)  # 为了兼容ASRPluginBase
         self._is_initialized = False  # 为了兼容ASRPluginBase
         self._supported_models = [
-            "sherpa_onnx_std",
-            "sherpa_onnx_int8",
+            "sherpa_0220_std",
+            "sherpa_0220_int8",
             "sherpa_0626_std",
             "sherpa_0626_int8"
         ]  # 为了兼容ASRPluginBase
@@ -145,7 +145,7 @@ class SherpaOnnxPlugin(PluginBase):
         if self.is_0626:
             return "sherpa_0626_std" if not self.is_int8 else "sherpa_0626_int8"
         else:
-            return "sherpa_onnx_std" if not self.is_int8 else "sherpa_onnx_int8"
+            return "sherpa_0220_std" if not self.is_int8 else "sherpa_0220_int8"
 
     def get_name(self) -> str:
         """获取插件名称"""
@@ -198,7 +198,11 @@ class SherpaOnnxPlugin(PluginBase):
                 return False
 
             # 获取配置
-            model_path = self.config.get('path', '')
+            model_path = self.config.get('path', None)
+            if not model_path:
+                logger.error("配置中缺少模型路径，请在models.json中设置正确的模型路径")
+                return False
+
             model_type = self.config.get('type', 'standard').lower()
             self.is_int8 = model_type == 'int8'
 
@@ -217,7 +221,7 @@ class SherpaOnnxPlugin(PluginBase):
             else:
                 self.is_0626 = False
                 self._model_version = "2023-02-20"
-                self.engine_type = "sherpa_onnx_std" if not self.is_int8 else "sherpa_onnx_int8"
+                self.engine_type = "sherpa_0220_std" if not self.is_int8 else "sherpa_0220_int8"
 
             # 确定模型文件名
             if self.is_0626:
@@ -828,8 +832,8 @@ class SherpaOnnxPlugin(PluginBase):
             List[str]: 支持的模型列表
         """
         return [
-            "sherpa_onnx_std",
-            "sherpa_onnx_int8",
+            "sherpa_0220_std",
+            "sherpa_0220_int8",
             "sherpa_0626_std",
             "sherpa_0626_int8"
         ]

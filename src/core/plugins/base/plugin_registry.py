@@ -3,7 +3,7 @@
 负责插件的注册和管理
 """
 import traceback
-from typing import Dict, Type, Optional, List
+from typing import Dict, Type, Optional, List, Any
 
 from .plugin_base import PluginBase
 from src.utils.logger import get_logger
@@ -74,11 +74,12 @@ class PluginRegistry:
             logger.error(traceback.format_exc())
             return False
 
-    def load_plugin(self, plugin_id: str) -> bool:
+    def load_plugin(self, plugin_id: str, config: Optional[Dict[str, Any]] = None) -> bool:
         """加载插件
 
         Args:
             plugin_id: 插件ID
+            config: 插件配置
 
         Returns:
             bool: 加载是否成功
@@ -96,17 +97,34 @@ class PluginRegistry:
 
             # 创建插件实例
             plugin_class = self.plugins[plugin_id]
-            # 检查插件类的__init__方法是否接受参数
-            if hasattr(plugin_class, '__init__') and plugin_class.__init__.__code__.co_argcount > 1:
-                # 如果插件类的__init__方法接受参数，则传入空字典
-                plugin = plugin_class({})
-            else:
-                # 否则不传入参数
-                plugin = plugin_class()
+
+            # 验证插件类
+            if not self._validate_plugin_class(plugin_class):
+                logger.error(f"插件类验证失败: {plugin_id}")
+                return False
+
+            # 创建插件实例
+            try:
+                # 检查插件类的__init__方法是否接受参数
+                if hasattr(plugin_class, '__init__') and plugin_class.__init__.__code__.co_argcount > 1:
+                    # 如果插件类的__init__方法接受参数，则传入配置
+                    plugin = plugin_class(config or {})
+                else:
+                    # 否则不传入参数
+                    plugin = plugin_class()
+            except Exception as e:
+                logger.error(f"创建插件实例失败: {plugin_id}, 错误: {str(e)}")
+                logger.error(traceback.format_exc())
+                return False
 
             # 初始化插件
-            if not plugin.initialize():
-                logger.error(f"初始化插件失败: {plugin_id}")
+            try:
+                if not plugin.initialize(config):
+                    logger.error(f"初始化插件失败: {plugin_id}")
+                    return False
+            except Exception as e:
+                logger.error(f"初始化插件失败: {plugin_id}, 错误: {str(e)}")
+                logger.error(traceback.format_exc())
                 return False
 
             # 保存插件实例
@@ -116,6 +134,35 @@ class PluginRegistry:
 
         except Exception as e:
             logger.error(f"加载插件失败: {plugin_id}, 错误: {str(e)}")
+            logger.error(traceback.format_exc())
+            return False
+
+    def _validate_plugin_class(self, plugin_class: Type[PluginBase]) -> bool:
+        """验证插件类
+
+        Args:
+            plugin_class: 插件类
+
+        Returns:
+            bool: 验证是否通过
+        """
+        try:
+            # 检查插件类是否继承自PluginBase
+            if not issubclass(plugin_class, PluginBase):
+                logger.error(f"插件类必须继承自PluginBase: {plugin_class.__name__}")
+                return False
+
+            # 检查插件类是否实现了必要的方法
+            required_methods = ['initialize', 'cleanup', 'get_id', 'get_name', 'get_version']
+            for method in required_methods:
+                if not hasattr(plugin_class, method) or not callable(getattr(plugin_class, method)):
+                    logger.error(f"插件类缺少必要的方法: {method}")
+                    return False
+
+            return True
+
+        except Exception as e:
+            logger.error(f"验证插件类失败: {plugin_class.__name__}, 错误: {str(e)}")
             logger.error(traceback.format_exc())
             return False
 

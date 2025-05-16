@@ -46,7 +46,7 @@ def test_sherpa_onnx_direct():
     print("开始直接测试 sherpa-onnx API...")
     
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 确定模型文件名
     is_int8 = True

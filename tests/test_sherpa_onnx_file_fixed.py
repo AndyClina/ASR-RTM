@@ -49,7 +49,7 @@ def test_sherpa_onnx_file_transcription():
     file_transcriber = FileTranscriber(signals)
 
     # 使用固定的测试文件路径
-    test_file = r"C:\Users\crige\RealtimeTrans\vosk-api-bak-J\mytest.mp4"
+    test_file = r"C:\Users\crige\models\test_data\mytest.mp4"
     print(f"使用测试文件: {test_file}")
     if not os.path.exists(test_file):
         print(f"文件不存在: {test_file}")

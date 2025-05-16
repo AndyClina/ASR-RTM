@@ -60,10 +60,9 @@ try:
             print(f"  创建实例失败（无参数）: {e}")
             
             # 尝试使用 from_conformer 方法
-            if hasattr(OnlineRecognizer, 'from_conformer'):
-                try:
+            if hasattr(OnlineRecognizer, 'from_conformer'):                try:
                     print("\n尝试使用 from_conformer 方法:")
-                    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+                    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
                     recognizer = OnlineRecognizer.from_conformer(
                         encoder=f"{model_path}\\encoder-epoch-99-avg-1.int8.onnx",
                         decoder=f"{model_path}\\decoder-epoch-99-avg-1.int8.onnx",
@@ -73,12 +72,11 @@ try:
                     print("  成功使用 from_conformer 创建实例")
                 except Exception as e:
                     print(f"  使用 from_conformer 创建实例失败: {e}")
-            
-            # 尝试使用 from_transducer 方法
+              # 尝试使用 from_transducer 方法
             if hasattr(OnlineRecognizer, 'from_transducer'):
                 try:
                     print("\n尝试使用 from_transducer 方法:")
-                    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+                    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
                     recognizer = OnlineRecognizer.from_transducer(
                         encoder=f"{model_path}\\encoder-epoch-99-avg-1.int8.onnx",
                         decoder=f"{model_path}\\decoder-epoch-99-avg-1.int8.onnx",

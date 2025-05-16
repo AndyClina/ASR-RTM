@@ -43,11 +43,10 @@ def read_wave(wave_filename: str) -> Tuple[np.ndarray, int]:
         return samples_float32, f.getframerate()
 
 def test_transducer_single_file():
-    """测试 transducer 模型处理单个文件"""
-    print("测试 transducer 模型处理单个文件...")
+    """测试 transducer 模型处理单个文件"""    print("测试 transducer 模型处理单个文件...")
 
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
 
     # 确定模型文件名
     use_int8 = True
@@ -136,11 +135,10 @@ def test_transducer_single_file():
             print(traceback.format_exc())
 
 def test_transducer_multiple_files():
-    """测试 transducer 模型处理多个文件"""
-    print("\n测试 transducer 模型处理多个文件...")
+    """测试 transducer 模型处理多个文件"""    print("\n测试 transducer 模型处理多个文件...")
 
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
 
     # 确定模型文件名
     use_int8 = True
@@ -241,12 +239,11 @@ def test_transducer_multiple_files():
             print("-" * 40)
 
 def test_realtime_simulation():
-    """模拟实时转录"""
-    print("\n模拟实时转录...")
+    """模拟实时转录"""    print("\n模拟实时转录...")
     print("注意：此测试可能会因为音频帧处理问题而失败，这不影响实际应用")
 
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
 
     # 确定模型文件名
     use_int8 = True

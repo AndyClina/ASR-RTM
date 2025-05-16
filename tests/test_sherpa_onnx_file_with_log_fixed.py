@@ -33,9 +33,8 @@ def test_sherpa_onnx_file():
     sherpa_logger.setup()
     sherpa_log_file = sherpa_logger.get_log_file()
     print(f"Sherpa-ONNX 日志文件: {sherpa_log_file}")
-    
-    # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+      # 模型路径
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 确定模型文件名
     use_int8 = True
@@ -74,9 +73,8 @@ def test_sherpa_onnx_file():
         import traceback
         sherpa_logger.error(traceback.format_exc())
         return
-    
-    # 测试文件路径
-    test_file = r"C:\Users\crige\RealtimeTrans\vosk-api-bak-J\mytest.mp4"
+      # 测试文件路径
+    test_file = r"C:\Users\crige\tests\mytest.mp4"
     sherpa_logger.info(f"使用测试文件: {test_file}")
     if not os.path.exists(test_file):
         sherpa_logger.error(f"文件不存在: {test_file}")

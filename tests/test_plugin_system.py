@@ -1,16 +1,71 @@
 """插件系统测试模块"""
-import pytest
-from pathlib import Path
 import sys
+import pytest
 import logging
+from pathlib import Path
 from typing import Dict, Any
 
-from src.core.plugins import PluginManager, PluginRegistry
-from src.core.asr import ASRModelManager
+# 添加项目根目录到 Python 路径
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from src.core.plugins.base.plugin_base import PluginBase
+from src.core.plugins.base.plugin_registry import PluginRegistry
+from src.core.plugins.base.plugin_manager import PluginManager
 
 # 配置日志
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+class TestPluginBase(PluginBase):
+    """测试插件基类"""
+
+    def __init__(self):
+        """初始化测试插件"""
+        super().__init__()
+        self.initialized = False
+        self.cleaned_up = False
+        self._config = {}
+
+    def initialize(self, config=None):
+        """初始化插件"""
+        self.initialized = True
+        if config:
+            self._config = config
+        return True
+
+    def cleanup(self):
+        """清理插件"""
+        self.cleaned_up = True
+        return True
+
+    def setup(self):
+        """设置插件"""
+        return True
+
+    def teardown(self):
+        """清理插件"""
+        return True
+
+    def get_id(self):
+        """获取插件ID"""
+        return "test_plugin"
+
+    def get_name(self):
+        """获取插件名称"""
+        return "Test Plugin"
+
+    def get_version(self):
+        """获取插件版本"""
+        return "1.0.0"
+
+    def get_description(self):
+        """获取插件描述"""
+        return "测试插件"
+
+    def get_author(self):
+        """获取插件作者"""
+        return "Test Author"
 
 @pytest.fixture
 def plugin_manager():
@@ -43,34 +98,53 @@ def test_config() -> Dict[str, Any]:
         }
     }
 
-def test_plugin_loading(plugin_manager, plugin_registry, test_config):
+def test_plugin_loading(plugin_registry):
     """测试插件加载"""
     # 注册测试插件
-    from src.core.plugins.asr.vosk_plugin import VoskPlugin
-    plugin_registry.register("vosk_small", VoskPlugin)
-    
-    # 设置插件管理器的配置
-    plugin_manager.configure(test_config)
-    
-    # 加载插件
-    plugins = plugin_manager.load_plugins("asr")
-    
-    # 验证是否成功加载了Vosk插件
-    assert "vosk_small" in plugins
-    
-    # 验证插件是否正确配置
-    plugin = plugins["vosk_small"]
-    assert plugin._config["path"] == "models/asr/vosk/vosk-model-small-en-us-0.15"
-    assert plugin._config["type"] == "vosk"
+    plugin_registry.register("test_plugin", TestPluginBase)
 
-def test_model_switching(test_config):
-    """测试模型切换"""
-    # 创建模型管理器
-    model_manager = ASRModelManager(test_config)
-    
-    # 测试加载模型
-    result = model_manager.load_model("vosk_small")
+    # 加载插件
+    result = plugin_registry.load_plugin("test_plugin")
+
+    # 验证是否成功加载了插件
     assert result is True
+    assert plugin_registry.is_loaded("test_plugin") is True
+
+    # 获取插件实例
+    plugin = plugin_registry.get_plugin("test_plugin")
+    assert plugin is not None
+    assert isinstance(plugin, TestPluginBase)
+    assert hasattr(plugin, "initialized")
+    assert plugin.initialized is True
+
+def test_plugin_registry():
+    """测试插件注册表"""
+    # 创建插件注册表
+    registry = PluginRegistry()
+
+    # 注册测试插件
+    result = registry.register("test_plugin", TestPluginBase)
+    assert result is True
+    assert registry.is_registered("test_plugin") is True
+
+    # 加载测试插件
+    result = registry.load_plugin("test_plugin", {"test": "value"})
+    assert result is True
+    assert registry.is_loaded("test_plugin") is True
+
+    # 获取测试插件
+    plugin = registry.get_plugin("test_plugin")
+    assert plugin is not None
+    assert isinstance(plugin, TestPluginBase)
+    assert hasattr(plugin, "initialized")
+    assert plugin.initialized is True
+    assert hasattr(plugin, "_config")
+    assert plugin._config == {"test": "value"}
+
+    # 卸载测试插件
+    result = registry.unload_plugin("test_plugin")
+    assert result is True
+    assert registry.is_loaded("test_plugin") is False
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])

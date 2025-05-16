@@ -28,7 +28,7 @@ def test_sherpa_onnx_online():
     print("测试 Sherpa-ONNX 在线转录...")
     
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 确定模型文件名
     use_int8 = True

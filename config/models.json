@@ -1,0 +1,15 @@
+{
+    "asr": {
+        "vosk_small": {
+            "path": "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15",
+            "type": "standard",
+            "enabled": true,
+            "config": {
+                "sample_rate": 16000,
+                "use_words": true,
+                "channels": 1,
+                "buffer_size": 4000
+            }
+        }
+    }
+}

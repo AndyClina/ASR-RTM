@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "app": {
+        "name": "测试应用",
+        "default_file": ""
+    },
+    "paths": {
+        "models_base": "C:\\Users\\crige\\RealtimeTrans\\vosk-api-bak\\ASR-RTM\\tests\\test_config\\models",
+        "models_config": "C:\\Users\\crige\\RealtimeTrans\\vosk-api-bak\\ASR-RTM\\tests\\test_config\\models.json",
+        "plugins_config": "C:\\Users\\crige\\RealtimeTrans\\vosk-api-bak\\ASR-RTM\\tests\\test_config\\plugins.json",
+        "logs_dir": "C:\\Users\\crige\\RealtimeTrans\\vosk-api-bak\\ASR-RTM\\tests\\test_config\\logs"
+    },
+    "asr": {
+        "default_model": "test_model",
+        "models": {
+            "test_model": {
+                "name": "测试模型",
+                "path": "asr/test/model",
+                "type": "standard",
+                "config": {
+                    "sample_rate": 16000,
+                    "use_words": true
+                }
+            }
+        }
+    },
+    "transcription": {
+        "default_model": "test_model",
+        "chunk_size": 0.5,
+        "sample_rate": 16000
+    }
+}

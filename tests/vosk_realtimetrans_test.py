@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout,
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QObject
 
 # 设置 vosk 模型路径
-MODEL_PATH = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
+MODEL_PATH = "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
 
 class TranscriptionSignals(QObject):
     """转录信号类"""

@@ -8,7 +8,7 @@ import json
 import logging
 import shutil
 from datetime import datetime
-from typing import Dict, Any, Optional, List, Union, Tuple
+from typing import Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -60,26 +60,43 @@ class ConfigManager:
                 logger.warning(f"主配置文件不存在: {self._config_path}")
                 self._config = {}
 
+            # 加载模型配置
+            models_path = os.path.join('config', 'models.json')
+            if os.path.exists(models_path):
+                logger.debug(f"尝试加载模型配置文件: {models_path}")
+                with open(models_path, 'r', encoding='utf-8') as f:
+                    models_config = json.load(f)
+                    # 将模型配置合并到主配置中
+                    self._config['models'] = models_config
+                logger.info("模型配置文件加载成功")
+            else:
+                logger.warning(f"模型配置文件不存在: {models_path}")
+
             # 加载插件配置
             if os.path.exists(self._plugins_path):
                 logger.debug(f"尝试加载插件配置文件: {self._plugins_path}")
                 with open(self._plugins_path, 'r', encoding='utf-8') as f:
                     self._config['plugins'] = json.load(f)
                 logger.info("插件配置文件加载成功")
+            else:
+                logger.warning(f"插件配置文件不存在: {self._plugins_path}")
 
-            # 加载UI配置
+            # 加载UI配置（如果存在）
             if os.path.exists(self._ui_config_path):
                 logger.debug(f"尝试加载UI配置文件: {self._ui_config_path}")
                 with open(self._ui_config_path, 'r', encoding='utf-8') as f:
                     self._config['ui'] = json.load(f)
                 logger.info("UI配置文件加载成功")
 
-            # 加载翻译配置
+            # 加载翻译配置（如果存在）
             if os.path.exists(self._translation_config_path):
                 logger.debug(f"尝试加载翻译配置文件: {self._translation_config_path}")
                 with open(self._translation_config_path, 'r', encoding='utf-8') as f:
                     self._config['translation'] = json.load(f)
                 logger.info("翻译配置文件加载成功")
+
+            # 解析和验证路径
+            self._resolve_paths()
 
             # 验证配置
             if not self.validate_config(self._config):
@@ -99,38 +116,122 @@ class ConfigManager:
             self._init_default_config()
             return self._config
 
+    def _resolve_paths(self):
+        """解析和验证配置中的路径"""
+        try:
+            # 确保 _config 是字典
+            if self._config is None:
+                self._config = {}
+
+            # 获取基础路径
+            paths_dict = self._config.get('paths', {})
+            if not isinstance(paths_dict, dict):
+                paths_dict = {}
+
+            base_path = paths_dict.get('models_base', '')
+            if not base_path:
+                logger.warning("配置中缺少模型基础路径，使用当前目录")
+                base_path = os.path.abspath('models')
+                # 更新配置
+                if 'paths' not in self._config:
+                    self._config['paths'] = {}
+                self._config['paths']['models_base'] = base_path
+
+            # 确保基础路径存在
+            os.makedirs(base_path, exist_ok=True)
+
+            # 解析模型路径
+            models_dict = self._config.get('models', {})
+            if isinstance(models_dict, dict):
+                for model_type_key, models_by_type in models_dict.items():
+                    if isinstance(models_by_type, dict):
+                        for model_name_key, model_config in models_by_type.items():
+                            if isinstance(model_config, dict) and 'path' in model_config:
+                                path = model_config['path']
+                                # 如果是相对路径，转换为绝对路径
+                                if not os.path.isabs(path):
+                                    abs_path = os.path.join(base_path, path)
+                                    logger.info(f"将相对路径 {path} 转换为绝对路径: {abs_path}")
+                                    model_config['path'] = abs_path
+
+            logger.info("路径解析完成")
+        except Exception as e:
+            logger.error(f"解析路径时发生错误: {str(e)}")
+
     def _init_default_config(self):
         """初始化默认配置"""
         self._config = {
+            "version": "2.0.0",
             "app": {
-                "name": "实时字幕",
-                "version": "1.0.0"
+                "name": "实时转录系统",
+                "default_file": ""
             },
-            "asr": {
-                "default_model": "vosk_small",
-                "models": {
+            "paths": {
+                "models_base": os.path.abspath('models'),
+                "models_config": "config/models.json",
+                "plugins_config": "config/plugins.json",
+                "logs_dir": "logs"
+            },
+            "models": {
+                "asr": {
                     "vosk_small": {
-                        "name": "VOSK Small Model",
-                        "path": "models/asr/vosk/vosk-model-small-en-us-0.15",
-                        "type": "vosk",
+                        "path": "asr/vosk/vosk-model-small-en-us-0.15",
+                        "type": "standard",
+                        "enabled": True,
                         "config": {
                             "sample_rate": 16000,
-                            "use_words": True
+                            "use_words": True,
+                            "channels": 1,
+                            "buffer_size": 4000
                         }
                     }
                 }
             },
-            "window": {
-                "opacity": 0.9,
-                "always_on_top": True,
-                "font_size": 12
-            },
             "transcription": {
                 "default_model": "vosk_small",
-                "save_transcripts": True,
-                "transcripts_dir": "transcripts"
+                "chunk_size": 0.5,
+                "tail_padding": 0.2,
+                "sample_rate": 16000,
+                "language": "en",
+                "asr": {
+                    "enable_endpoint": True,
+                    "rule1_min_trailing_silence": 2.4,
+                    "rule2_min_trailing_silence": 1.2,
+                    "rule3_min_utterance_length": 20.0
+                }
+            },
+            "window": {
+                "title": "实时字幕",
+                "pos_x": 100,
+                "pos_y": 100,
+                "width": 800,
+                "height": 400,
+                "opacity": 0.9,
+                "always_on_top": True,
+                "background_mode": "translucent"
+            },
+            "ui": {
+                "theme": "dark",
+                "language": "zh_CN",
+                "fonts": {
+                    "subtitle": {
+                        "family": "Arial",
+                        "size": 24,
+                        "weight": "bold",
+                        "color": "#FFFFFF"
+                    }
+                }
+            },
+            "logging": {
+                "level": "INFO",
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                "file": "logs/app.log"
             }
         }
+
+        # 解析路径
+        self._resolve_paths()
+
         logger.info("已初始化默认配置")
 
     def save_config(self, section: Optional[str] = None) -> bool:
@@ -143,34 +244,64 @@ class ConfigManager:
             bool: 保存是否成功
         """
         try:
+            # 确保 _config 是字典
+            if self._config is None:
+                self._config = {}
+
             # 创建备份
             self._create_backup()
 
             if section is None or section == 'main':
                 # 保存主配置
-                main_config = {k: v for k, v in self._config.items()
-                              if k not in ['plugins', 'ui', 'translation']}
+                main_config = {}
+                for k, v in self._config.items():
+                    if k not in ['plugins', 'ui', 'translation']:
+                        main_config[k] = v
+
                 with open(self._config_path, 'w', encoding='utf-8') as f:
                     json.dump(main_config, f, indent=4, ensure_ascii=False)
                 logger.info(f"已保存主配置: {self._config_path}")
 
             if section is None or section == 'plugins':
                 # 保存插件配置
+                plugins_config = self._config.get('plugins', {})
+                if not isinstance(plugins_config, dict):
+                    plugins_config = {}
+
                 with open(self._plugins_path, 'w', encoding='utf-8') as f:
-                    json.dump(self._config.get('plugins', {}), f, indent=4, ensure_ascii=False)
+                    json.dump(plugins_config, f, indent=4, ensure_ascii=False)
                 logger.info(f"已保存插件配置: {self._plugins_path}")
 
             if section is None or section == 'ui':
                 # 保存UI配置
+                ui_config = self._config.get('ui', {})
+                if not isinstance(ui_config, dict):
+                    ui_config = {}
+
                 with open(self._ui_config_path, 'w', encoding='utf-8') as f:
-                    json.dump(self._config.get('ui', {}), f, indent=4, ensure_ascii=False)
+                    json.dump(ui_config, f, indent=4, ensure_ascii=False)
                 logger.info(f"已保存UI配置: {self._ui_config_path}")
 
             if section is None or section == 'translation':
                 # 保存翻译配置
+                translation_config = self._config.get('translation', {})
+                if not isinstance(translation_config, dict):
+                    translation_config = {}
+
                 with open(self._translation_config_path, 'w', encoding='utf-8') as f:
-                    json.dump(self._config.get('translation', {}), f, indent=4, ensure_ascii=False)
+                    json.dump(translation_config, f, indent=4, ensure_ascii=False)
                 logger.info(f"已保存翻译配置: {self._translation_config_path}")
+
+            # 保存模型配置
+            if section is None or section == 'models':
+                models_path = os.path.join('config', 'models.json')
+                models_config = self._config.get('models', {})
+                if not isinstance(models_config, dict):
+                    models_config = {}
+
+                with open(models_path, 'w', encoding='utf-8') as f:
+                    json.dump(models_config, f, indent=4, ensure_ascii=False)
+                logger.info(f"已保存模型配置: {models_path}")
 
             return True
         except Exception as e:
@@ -288,6 +419,10 @@ class ConfigManager:
             return False
 
         try:
+            # 确保 _config 是字典
+            if self._config is None:
+                self._config = {}
+
             # 如果只有一个键且包含点号，按点号分割
             if len(keys) == 1 and isinstance(keys[0], str) and '.' in keys[0]:
                 keys = keys[0].split('.')
@@ -295,6 +430,8 @@ class ConfigManager:
             # 递归创建嵌套字典
             config = self._config
             for key in keys[:-1]:
+                if not isinstance(config, dict):
+                    config = {}
                 if key not in config:
                     config[key] = {}
                 elif not isinstance(config[key], dict):
@@ -302,6 +439,9 @@ class ConfigManager:
                 config = config[key]
 
             # 设置最终值
+            if not isinstance(config, dict):
+                config = {}
+                self._config = config  # 重置根配置
             config[keys[-1]] = value
             return True
         except Exception as e:
@@ -405,6 +545,10 @@ class ConfigManager:
             bool: 是否更新成功
         """
         try:
+            # 确保 _config 是字典
+            if self._config is None:
+                self._config = {}
+
             # 更新配置
             self._config[section] = config
 
@@ -452,6 +596,8 @@ class ConfigManager:
 
             if model_type.startswith("sherpa"):
                 # Sherpa-ONNX 模型文件验证
+                # 注意：这里不是硬编码路径，而是检查必要的文件是否存在
+                # 实际文件名可能因模型版本而异，这里只是一个基本检查
                 required_files = [
                     "encoder.onnx",
                     "decoder.onnx",
@@ -528,6 +674,9 @@ class ConfigManager:
         Returns:
             Dict[str, Any]: 完整的配置字典
         """
+        # 确保返回字典
+        if self._config is None or not isinstance(self._config, dict):
+            return {}
         return self._config
 
     def get_all_models(self) -> Dict[str, Dict[str, Any]]:
@@ -537,7 +686,18 @@ class ConfigManager:
         Returns:
             Dict[str, Dict[str, Any]]: 所有模型配置
         """
-        return self.get_config('asr', 'models', default={})
+        # 首先尝试从 models.asr 获取
+        models = self.get_config('models', 'asr', default={})
+        if models:
+            return models
+
+        # 然后尝试从 asr.models 获取
+        models = self.get_config('asr', 'models', default={})
+        if models:
+            return models
+
+        # 最后尝试直接从 asr 获取
+        return self.get_config('asr', default={})
 
     def get_all_plugins(self) -> Dict[str, Dict[str, Any]]:
         """

@@ -1,15 +1,15 @@
 # 系统音频字幕程序菜单结构说明
-# 通用提示词：首先必须基于.cursorrules的规则约定，不能违背。其次，目前基于默认vosk small模型的在线与离线转录功能均已调试正常。接下来，计划逐步增加新模型开发，一个一个来，先从"ASR模型，sherpa-onnx int8量化模型: "开始（成功后再开始sherpa_std标准模型），其模型路径是："PATH:"C:\Users\crige\RealtimeTrans\vosk-api\models\sherpa-onnx"（注意int8 and std model are in the identical path），注意统一使用config配置文件来调度，config\config.json。
+# 通用提示词：首先必须基于.cursorrules的规则约定，不能违背。其次，目前基于默认vosk small模型的在线与离线转录功能均已调试正常。接下来，计划逐步增加新模型开发，一个一个来，先从"ASR模型，sherpa-onnx int8量化模型: "开始（成功后再开始sherpa_std标准模型），其模型路径是："PATH:"C:\Users\crige\models\sherpa-onnx"（注意int8 and std model are in the identical path），注意统一使用config配置文件来调度，config\config.json。
 
 ## 概述
 
 本项目是一个实时音频转录系统，能够捕获系统音频或麦克风输入，并将其转换为文本字幕。该程序使用 PyQt5 构建图形界面，使用 Vosk and sherpa-onnx 2个ASR模型和 RTM 模型，使用 Argostranslate 和 Opus-Mt-ONNX  进行语音识别和翻译，支持多种功能和设置选项。目前ASR采用ASR语音识别模型，运行实时转录正常使用vosk small模型，使用sherpa-onnx int8量化模型，使用sherpa-onnx 标准模型，以上三者可选。RTM翻译模型，使用argostranslate模型，使用opus-mt-onnx模型，以上二者可选。具体模型存放位置与要求实现菜单的要求如下：
 模型目录说明：一共要用到7个模型，其中5个属于ASR模型分别是vosk small模型，sherpa-onnx int8量化模型与sherpa-onnx 标准模型，以及sherpa_0626 int8 模型与sherpa_0626 标准模型；其它2个属于RTM模型分别是argostranslate模型，opus-mt-onnx模型。这些模型的路径如下：
-ASR模型1，VOSK small 模型路径: PATH:"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\vosk\vosk-model-small-en-us-0.15"
-ASR模型2，sherpa-onnx int8量化模型路径: PATH:"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx" 
+ASR模型1，VOSK small 模型路径: PATH:"C:\Users\crige\models\asr\vosk\vosk-model-small-en-us-0.15"
+ASR模型2，sherpa-onnx int8量化模型路径: PATH:"C:\Users\crige\models\asr\sherpa-onnx" 
 ASR模型3，sherpa-onnx 标准模型路径，与其对应的int8量化模型路径相同: 
-PATH:"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx" 
-ASR模型4，sherpa_0626 int8模型路径）：C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26
+PATH:"C:\Users\crige\models\asr\sherpa-onnx" 
+ASR模型4，sherpa_0626 int8模型路径）：C:\Users\crige\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26
 "sherpa_0626_int8": {
                 "path": "models/asr/sherpa-onnx-streaming-zipformer-en-2023-06-26",
                 "type": "int8",
@@ -20,7 +20,7 @@ ASR模型4，sherpa_0626 int8模型路径）：C:\Users\crige\RealtimeTrans\vosk
                     "joiner": "/models/asr/sherpa-onnx-streaming-zipformer-en-2023-06-26/joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx",
                     "tokens": "/models/asr/sherpa-onnx-streaming-zipformer-en-2023-06-26/tokens.txt",
 ....
-ASR模型5，sherpa_0626 标准模型路径，与其对应的int8量化模型路径相同：C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26
+ASR模型5，sherpa_0626 标准模型路径，与其对应的int8量化模型路径相同：C:\Users\crige\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26
 "sherpa_0626_std": {
                 "path": "models/asr/sherpa-onnx-streaming-zipformer-en-2023-06-26",
                 "type": "standard",
@@ -32,8 +32,8 @@ ASR模型5，sherpa_0626 标准模型路径，与其对应的int8量化模型路
                     "tokens": "/models/asr/sherpa-onnx-streaming-zipformer-en-2023-06-26/tokens.txt",
 ....
 RTM模型1，Argostranslate 模型路径: 
-PATH:"C:\Users\crige\RealtimeTrans\vosk-api\models\translation\argos-translate\packages\translate-en_zh-1_9"
-RTM模型2，Opus-MT-onnx 模型路径: PATH:"C:\Users\crige\RealtimeTrans\vosk-api\models\translation\opus-mt\en-zh"
+PATH:"C:\Users\crige\models\translation\argos-translate\packages\translate-en_zh-1_9"
+RTM模型2，Opus-MT-onnx 模型路径: PATH:"C:\Users\crige\models\translation\opus-mt\en-zh"
 根据以上7个模型的实际路径，配置好config.json文件，在配置文件中模型要名称要一一对应。
 ## 菜单结构图
 

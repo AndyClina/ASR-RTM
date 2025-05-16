@@ -26,8 +26,8 @@ except ImportError:
     sys.exit(1)
 
 # 模型路径
-MODEL_2023_02_20_PATH = r"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx"
-MODEL_2023_06_26_PATH = r"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
+MODEL_2023_02_20_PATH = r"C:\Users\crige\models\asr\sherpa-onnx"
+MODEL_2023_06_26_PATH = r"C:\Users\crige\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
 
 # 测试音频路径
 TEST_WAVS_PATH = os.path.join(MODEL_2023_06_26_PATH, "test_wavs")

@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "plugins": {
+        "asr": {
+            "test_plugin": {
+                "enabled": true,
+                "type": "asr",
+                "model_config": "test_model",
+                "plugin_config": {
+                    "use_words": true
+                }
+            }
+        }
+    }
+}

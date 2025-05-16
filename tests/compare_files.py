@@ -13,7 +13,6 @@ def compare_files(file1, file2):
     for line in diff:
         print(line, end='')
 
-if __name__ == "__main__":
-    file1 = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\src\\ui\\main_window.py"
-    file2 = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\src\\ui\\main_window_new.py"
+if __name__ == "__main__":    file1 = "C:\\Users\\crige\\src\\ui\\main_window.py"
+    file2 = "C:\\Users\\crige\\src\\ui\\main_window_new.py"
     compare_files(file1, file2)

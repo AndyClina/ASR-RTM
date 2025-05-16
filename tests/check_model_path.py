@@ -6,7 +6,7 @@ import os
 import sys
 
 # 设置 vosk 模型路径
-MODEL_PATH = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
+MODEL_PATH = "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
 
 def main():
     """主函数"""

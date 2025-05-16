@@ -84,7 +84,7 @@ def test_mp4_transcription():
     print("测试 MP4 文件转录...")
     
     # MP4 文件路径
-    mp4_file = "C:\\Users\\crige\\RealtimeTrans\\vosk-api-bak-J\\mytest.mp4"
+    mp4_file = "C:\\Users\\crige\\tests\\mytest.mp4"
     
     if not os.path.exists(mp4_file):
         print(f"MP4 文件不存在: {mp4_file}")
@@ -97,7 +97,7 @@ def test_mp4_transcription():
         return
     
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 确定模型文件名
     use_int8 = True
@@ -187,7 +187,7 @@ def test_mp4_realtime_simulation():
     print("\n模拟实时转录 MP4 文件...")
     
     # MP4 文件路径
-    mp4_file = "C:\\Users\\crige\\RealtimeTrans\\vosk-api-bak-J\\mytest.mp4"
+    mp4_file = "C:\\Users\\crige\\tests\\mytest.mp4"
     
     if not os.path.exists(mp4_file):
         print(f"MP4 文件不存在: {mp4_file}")
@@ -200,7 +200,7 @@ def test_mp4_realtime_simulation():
         return
     
     # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 确定模型文件名
     use_int8 = True

@@ -2,17 +2,14 @@
 主菜单模块
 负责创建和管理应用程序的主菜单栏
 """
+import traceback
 from PyQt5.QtWidgets import QMenuBar
 
 from src.utils.config_manager import config_manager
 from src.utils.logger import get_logger
 from src.ui.menu.transcription_menu import TranscriptionMenu
-from src.ui.menu.model_menu import ModelMenu
-from src.ui.menu.background_menu import BackgroundMenu
-from src.ui.menu.font_menu import FontMenu
-from src.ui.menu.model_management_menu import ModelManagementMenu
-from src.ui.menu.plugin_menu import PluginMenu
-from src.ui.menu.extra_menu import ExtraMenu
+from src.ui.menu.extension_menu import ExtensionMenu
+from src.ui.menu.ui_settings_menu import UISettingsMenu
 from src.ui.menu.help_menu import HelpMenu
 
 logger = get_logger(__name__)
@@ -73,29 +70,13 @@ class MainMenu(QMenuBar):
             self.transcription_menu = TranscriptionMenu(self.parent())
             self.addMenu(self.transcription_menu)
 
-            # 模型选择菜单
-            self.model_menu = ModelMenu(self.parent())
-            self.addMenu(self.model_menu)
+            # 扩展管理菜单
+            self.extension_menu = ExtensionMenu(self.parent())
+            self.addMenu(self.extension_menu)
 
-            # 背景模式菜单
-            self.background_menu = BackgroundMenu(self.parent())
-            self.addMenu(self.background_menu)
-
-            # 字体菜单
-            self.font_menu = FontMenu(self.parent())
-            self.addMenu(self.font_menu)
-
-            # 模型管理菜单
-            self.model_management_menu = ModelManagementMenu(self.parent())
-            self.addMenu(self.model_management_menu)
-
-            # 插件菜单
-            self.plugin_menu = PluginMenu(self.parent())
-            self.addMenu(self.plugin_menu)
-
-            # 附加功能菜单
-            self.extra_menu = ExtraMenu(self.parent())
-            self.addMenu(self.extra_menu)
+            # UI设置菜单
+            self.ui_settings_menu = UISettingsMenu(self.parent())
+            self.addMenu(self.ui_settings_menu)
 
             # 帮助菜单
             self.help_menu = HelpMenu(self.parent())
@@ -104,7 +85,6 @@ class MainMenu(QMenuBar):
             logger.info("所有菜单创建完成")
         except Exception as e:
             logger.error(f"创建菜单时出错: {str(e)}")
-            import traceback
             logger.error(traceback.format_exc())
 
     def connect_signals(self, main_window):
@@ -118,24 +98,11 @@ class MainMenu(QMenuBar):
             # 转录模式菜单信号
             self.transcription_menu.connect_signals(main_window)
 
-            # 模型选择菜单信号
-            self.model_menu.connect_signals(main_window)
+            # 扩展管理菜单信号
+            self.extension_menu.connect_signals(main_window)
 
-            # 背景模式菜单信号
-            self.background_menu.connect_signals(main_window)
-
-            # 字体菜单信号
-            self.font_menu.connect_signals(main_window)
-
-            # 模型管理菜单信号
-            self.model_management_menu.connect_signals(main_window)
-
-            # 插件菜单信号
-            if hasattr(self, 'plugin_menu'):
-                self.plugin_menu.plugin_manager_requested.connect(main_window._show_plugin_manager)
-
-            # 附加功能菜单信号
-            self.extra_menu.connect_signals(main_window)
+            # UI设置菜单信号
+            self.ui_settings_menu.connect_signals(main_window)
 
             # 帮助菜单信号
             self.help_menu.connect_signals(main_window)
@@ -143,7 +110,6 @@ class MainMenu(QMenuBar):
             logger.info("所有菜单信号连接完成")
         except Exception as e:
             logger.error(f"连接菜单信号时出错: {str(e)}")
-            import traceback
             logger.error(traceback.format_exc())
 
     def update_menu_state(self, is_recording=False):
@@ -155,23 +121,14 @@ class MainMenu(QMenuBar):
         """
         try:
             # 在录音时禁用某些菜单
-            self.transcription_menu.setEnabled(not is_recording)
-            self.model_menu.setEnabled(not is_recording)
-
-            # 插件菜单在录音时禁用
-            if hasattr(self, 'plugin_menu'):
-                self.plugin_menu.setEnabled(not is_recording)
+            self.transcription_menu.setEnabled(True)  # 转录菜单始终可用，内部会禁用特定项
 
             # 更新子菜单状态
             self.transcription_menu.update_menu_state(is_recording)
-            self.model_menu.update_menu_state(is_recording)
-            self.background_menu.update_menu_state(is_recording)
-            self.font_menu.update_menu_state(is_recording)
-            self.model_management_menu.update_menu_state(is_recording)
-            self.extra_menu.update_menu_state(is_recording)
+            self.extension_menu.update_menu_state(is_recording)
+            self.ui_settings_menu.update_menu_state(is_recording)
 
             logger.debug(f"菜单状态已更新，录音状态: {is_recording}")
         except Exception as e:
             logger.error(f"更新菜单状态时出错: {str(e)}")
-            import traceback
             logger.error(traceback.format_exc())

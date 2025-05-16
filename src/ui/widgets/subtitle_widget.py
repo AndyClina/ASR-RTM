@@ -134,7 +134,7 @@ class SubtitleWidget(QScrollArea):
 
         # 初始化引擎类型（用于区分不同的ASR引擎）
         # 这个属性由MainWindow类在set_asr_model和_load_default_model方法中设置
-        # 可能的值：'vosk_small', 'sherpa_onnx_int8', 'sherpa_onnx_std', 'sherpa_0626_int8', 'sherpa_0626_std'
+        # 可能的值：'vosk_small', 'sherpa_0220_int8', 'sherpa_0220_std', 'sherpa_0626_int8', 'sherpa_0626_std'
         # 用于在update_text方法中根据引擎类型采用不同的处理逻辑
         # 这样可以确保不同引擎的结果都能正确显示，而不会互相影响
         self.current_engine_type = None
@@ -500,12 +500,48 @@ class SubtitleWidget(QScrollArea):
         Args:
             mode (str): 背景模式('opaque', 'translucent', 'transparent')
         """
-        if mode == 'opaque':
-            self.subtitle_label.set_opacity(1.0)
-        elif mode == 'translucent':
-            self.subtitle_label.set_opacity(0.8)
-        elif mode == 'transparent':
-            self.subtitle_label.set_opacity(0.5)
+        try:
+            # 获取样式配置
+            padding = self.subtitle_label.styles_config.get('subtitle_padding', 15)
+            border_radius = self.subtitle_label.styles_config.get('subtitle_border_radius', 10)
+            font_color = self.subtitle_label.font_config.get('color', '#FFFFFF')
+
+            if mode == 'opaque':
+                # 不透明模式 - 纯白色背景
+                self.subtitle_label.set_opacity(1.0)
+                # 设置白色背景和黑色文字
+                self.subtitle_label.setStyleSheet(f"""
+                    QLabel {{
+                        color: #000000;
+                        background-color: #FFFFFF;
+                        padding: {padding}px;
+                        border-radius: {border_radius}px;
+                        qproperty-alignment: AlignLeft;
+                    }}
+                """)
+            elif mode == 'translucent':
+                # 半透明模式 - 半透明背景
+                self.subtitle_label.set_opacity(0.8)
+                # 设置半透明背景
+                self.subtitle_label.setStyleSheet(f"""
+                    QLabel {{
+                        color: {font_color};
+                        background-color: rgba(255, 255, 255, 180);
+                        padding: {padding}px;
+                        border-radius: {border_radius}px;
+                        qproperty-alignment: AlignLeft;
+                    }}
+                """)
+            elif mode == 'transparent':
+                # 透明模式
+                self.subtitle_label.set_opacity(0.5)
+                # 恢复默认样式
+                self.subtitle_label._apply_styles()
+
+            logger.debug(f"背景模式已设置为: {mode}")
+        except Exception as e:
+            logger.error(f"设置背景模式时出错: {str(e)}")
+            logger.error(traceback.format_exc())
 
     def save_transcript(self):
         """

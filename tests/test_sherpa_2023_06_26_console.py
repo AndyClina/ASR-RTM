@@ -33,7 +33,7 @@ except ImportError:
 import soundcard as sc
 
 # 模型路径
-MODEL_2023_06_26_PATH = r"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
+MODEL_2023_06_26_PATH = r"C:\Users\crige\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
 
 
 def load_model_2023_06_26(use_int8: bool = True):

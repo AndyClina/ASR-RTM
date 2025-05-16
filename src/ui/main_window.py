@@ -11,8 +11,8 @@ import traceback
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt, pyqtSlot, QTimer
 
-# 导入新的菜单类
-from src.ui.menu.main_menu_new import MainMenu
+# 导入菜单类
+from src.ui.menu.main_menu import MainMenu
 from src.ui.widgets.subtitle_widget import SubtitleWidget
 from src.ui.widgets.control_panel import ControlPanel
 from src.ui.dialogs.plugin_manager_dialog import PluginManagerDialog
@@ -228,14 +228,13 @@ class MainWindow(QMainWindow):
                 for model_id, action in self.menu_bar.transcription_menu.actions.items():
                     if model_id in ['vosk_small', 'vosk_medium', 'vosk_large',
                                    'sherpa_0220_int8', 'sherpa_0220_std',
-                                   'sherpa_0621_int8', 'sherpa_0621_std',
                                    'sherpa_0626_int8', 'sherpa_0626_std']:
                         if action.isCheckable():
                             action.setChecked(model_id == default_model)
             # 兼容旧的菜单结构
             elif hasattr(self.menu_bar, 'model_menu') and hasattr(self.menu_bar.model_menu, 'actions'):
                 for key, action in self.menu_bar.model_menu.actions.items():
-                    if key in ['vosk_small', 'sherpa_onnx_int8', 'sherpa_onnx_std', 'sherpa_0626_int8', 'sherpa_0626_std']:
+                    if key in ['vosk_small', 'sherpa_0220_int8', 'sherpa_0220_std', 'sherpa_0626_int8', 'sherpa_0626_std']:
                         action.setChecked(key == default_model)
         except Exception as e:
             self.logger.error(f"更新菜单选中状态时出错: {str(e)}")
@@ -1219,8 +1218,12 @@ class MainWindow(QMainWindow):
                 self.control_panel.set_transcription_mode("system")
 
             # 更新菜单选中状态
-            self.menu_bar.transcription_menu.system_audio_action.setChecked(True)
-            self.menu_bar.transcription_menu.actions['select_file'].setChecked(False)
+            # 直接获取菜单项并设置状态
+            for action in self.menu_bar.transcription_menu.actions():
+                if action.text() == "系统音频模式(&S)":
+                    action.setChecked(True)
+                elif action.text() == "文件音频模式(&F)":
+                    action.setChecked(False)
 
         # 设置语言
         print(f"设置识别语言: {language}")
@@ -1764,8 +1767,12 @@ class MainWindow(QMainWindow):
             self.is_file_mode = True
 
             # 更新菜单选中状态
-            self.menu_bar.transcription_menu.system_audio_action.setChecked(False)
-            self.menu_bar.transcription_menu.actions['select_file'].setChecked(True)
+            # 直接获取菜单项并设置状态
+            for action in self.menu_bar.transcription_menu.actions():
+                if action.text() == "系统音频模式(&S)":
+                    action.setChecked(False)
+                elif action.text() == "文件音频模式(&F)":
+                    action.setChecked(True)
 
             # 更新状态
             self.signals.status_updated.emit(f"已选择文件: {os.path.basename(file_path)}")
@@ -1824,7 +1831,8 @@ class MainWindow(QMainWindow):
                 self.subtitle_widget.subtitle_label.setText(file_info)
 
                 # 滚动到顶部
-                QTimer.singleShot(100, lambda: self.subtitle_widget.verticalScrollBar().setValue(0))
+                # 使用安全的方式滚动
+                QTimer.singleShot(100, lambda: self._safe_scroll_to_top())
 
             except Exception as e:
                 logging.error(f"获取文件信息错误: {e}")
@@ -1950,7 +1958,8 @@ class MainWindow(QMainWindow):
                 info_text = f"{language_info}\n准备就绪，点击'开始转录'按钮开始捕获系统音频"
                 self.subtitle_widget.subtitle_label.setText(info_text)
                 # 滚动到顶部
-                QTimer.singleShot(100, lambda: self.subtitle_widget.verticalScrollBar().setValue(0))
+                # 使用安全的方式滚动
+                QTimer.singleShot(100, lambda: self._safe_scroll_to_top())
         except Exception as e:
             self.logger.error(f"设置语言模式时出错: {str(e)}")
             self.logger.error(traceback.format_exc())
@@ -2130,6 +2139,16 @@ class MainWindow(QMainWindow):
             self.logger.error(f"刷新插件时出错: {str(e)}")
             self.logger.error(traceback.format_exc())
             self.signals.status_updated.emit(f"刷新插件失败: {str(e)}")
+
+    def _safe_scroll_to_top(self):
+        """安全地滚动到顶部"""
+        try:
+            # 检查是否有滚动条
+            if hasattr(self.subtitle_widget, 'verticalScrollBar') and self.subtitle_widget.verticalScrollBar():
+                self.subtitle_widget.verticalScrollBar().setValue(0)
+        except Exception as e:
+            self.logger.error(f"滚动到顶部时出错: {str(e)}")
+            # 不需要向用户显示此错误
 
     def _show_plugin_manager(self):
         """显示插件管理器对话框"""

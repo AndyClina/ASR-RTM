@@ -38,12 +38,11 @@ try:
     # 方法2: 尝试直接创建 OnlineRecognizer
     try:
         print("\n方法2: 直接创建 OnlineRecognizer")
-        # 使用最简单的参数调用
-        recognizer = sherpa_onnx.OnlineRecognizer(
-            tokens="C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx\\tokens.txt",
-            encoder="C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx\\encoder-epoch-99-avg-1.int8.onnx",
-            decoder="C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx\\decoder-epoch-99-avg-1.int8.onnx",
-            joiner="C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx\\joiner-epoch-99-avg-1.int8.onnx",
+        # 使用最简单的参数调用        recognizer = sherpa_onnx.OnlineRecognizer(
+            tokens="C:\\Users\\crige\\models\\asr\\sherpa-onnx\\tokens.txt",
+            encoder="C:\\Users\\crige\\models\\asr\\sherpa-onnx\\encoder-epoch-99-avg-1.int8.onnx",
+            decoder="C:\\Users\\crige\\models\\asr\\sherpa-onnx\\decoder-epoch-99-avg-1.int8.onnx",
+            joiner="C:\\Users\\crige\\models\\asr\\sherpa-onnx\\joiner-epoch-99-avg-1.int8.onnx",
         )
         print("  成功创建 OnlineRecognizer")
         

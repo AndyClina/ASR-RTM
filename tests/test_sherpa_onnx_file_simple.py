@@ -24,9 +24,8 @@ except ImportError:
 def test_sherpa_onnx_file():
     """测试 Sherpa-ONNX 文件转录"""
     print("测试 Sherpa-ONNX 文件转录...")
-    
-    # 模型路径
-    model_path = "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\sherpa-onnx"
+      # 模型路径
+    model_path = "C:\\Users\\crige\\models\\asr\\sherpa-onnx"
     
     # 确定模型文件名
     use_int8 = True
@@ -65,9 +64,8 @@ def test_sherpa_onnx_file():
         import traceback
         print(traceback.format_exc())
         return
-    
-    # 测试文件路径
-    test_file = r"C:\Users\crige\RealtimeTrans\vosk-api-bak-J\mytest.mp4"
+      # 测试文件路径
+    test_file = r"C:\Users\crige\tests\mytest.mp4"
     print(f"使用测试文件: {test_file}")
     if not os.path.exists(test_file):
         print(f"文件不存在: {test_file}")

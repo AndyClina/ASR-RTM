@@ -25,10 +25,8 @@ def test_sherpa_0626_engine():
     # 初始化日志工具
     sherpa_logger.setup()
     sherpa_log_file = sherpa_logger.get_log_file()
-    print(f"Sherpa-ONNX 日志文件: {sherpa_log_file}")
-
-    # 模型路径
-    model_path = r"C:\Users\crige\RealtimeTrans\vosk-api\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
+    print(f"Sherpa-ONNX 日志文件: {sherpa_log_file}")    # 模型路径
+    model_path = r"C:\Users\crige\models\asr\sherpa-onnx-streaming-zipformer-en-2023-06-26"
     
     # 创建 SherpaOnnxASR 实例
     print(f"创建 SherpaOnnxASR 实例，路径: {model_path}")
