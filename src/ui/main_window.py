@@ -352,7 +352,7 @@ class MainWindow(QMainWindow):
             sherpa_logger.info(f"文件路径: {self.file_path}")
 
             # 检查文件是否存在
-            if not os.path.exists(self.file_path):
+            if self.file_path and not os.path.exists(self.file_path):
                 error_msg = f"文件不存在: {self.file_path}"
                 sherpa_logger.error(error_msg)
                 self.signals.error_occurred.emit(error_msg)
@@ -1762,6 +1762,7 @@ class MainWindow(QMainWindow):
             return
 
         try:
+
             # 设置文件路径和转录模式
             self.file_path = file_path
             self.is_file_mode = True

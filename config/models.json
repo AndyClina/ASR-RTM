@@ -10,6 +10,77 @@
                 "channels": 1,
                 "buffer_size": 4000
             }
+        },
+        "sherpa_0220_int8": {
+            "path": "C:\\Users\\crige\\models\\asr\\sherpa-onnx",
+            "type": "quantized",
+            "enabled": true,
+            "config": {
+                "sample_rate": 16000,
+                "channels": 1,
+                "buffer_size": 8000,
+                "feature_dim": 80
+            }
+        },
+        "sherpa_0220_std": {
+            "path": "C:\\Users\\crige\\models\\asr\\sherpa-onnx",
+            "type": "standard",
+            "enabled": true,
+            "config": {
+                "sample_rate": 16000,
+                "channels": 1,
+                "buffer_size": 8000,
+                "feature_dim": 80
+            }
+        },
+        "sherpa_0626_int8": {
+            "path": "C:\\Users\\crige\\models\\asr\\sherpa-onnx-streaming-zipformer-en-2023-06-26",
+            "type": "quantized",
+            "enabled": true,
+            "config": {
+                "sample_rate": 16000,
+                "channels": 1,
+                "buffer_size": 8000,
+                "feature_dim": 80
+            }
+        },
+        "sherpa_0626_std": {
+            "path": "C:\\Users\\crige\\models\\asr\\sherpa-onnx-streaming-zipformer-en-2023-06-26",
+            "type": "standard",
+            "enabled": true,
+            "config": {
+                "sample_rate": 16000,
+                "channels": 1,
+                "buffer_size": 8000,
+                "feature_dim": 80
+            }
+        }
+    },
+    "translation": {
+        "argos": {
+            "path": "C:\\Users\\crige\\models\\translation\\argos-translate\\packages\\translate-en_zh-1_9",
+            "type": "standard",
+            "enabled": true,
+            "config": {
+                "languages": {
+                    "source": "en",
+                    "target": "zh"
+                }
+            }
+        },
+        "opus": {
+            "path": "C:\\Users\\crige\\models\\translation\\opus-mt\\en-zh",
+            "type": "onnx",
+            "enabled": true,
+            "config": {
+                "use_onnx": true,
+                "onnx_config": {
+                    "use_io_binding": false,
+                    "num_beams": 4,
+                    "early_stopping": true,
+                    "length_penalty": 0.6
+                }
+            }
         }
     }
 }

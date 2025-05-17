@@ -1,0 +1,226 @@
+{
+    "timestamp": "20250517_193940",
+    "total_folders": 55,
+    "folders": [
+        {
+            "name": "asr",
+            "path": "C:\\users\\crige\\models\\asr"
+        },
+        {
+            "name": "test_data",
+            "path": "C:\\users\\crige\\models\\test_data"
+        },
+        {
+            "name": "translation",
+            "path": "C:\\users\\crige\\models\\translation"
+        },
+        {
+            "name": "sherpa-onnx",
+            "path": "C:\\users\\crige\\models\\asr\\sherpa-onnx"
+        },
+        {
+            "name": "sherpa-onnx-streaming-zipformer-en-2023-06-26",
+            "path": "C:\\users\\crige\\models\\asr\\sherpa-onnx-streaming-zipformer-en-2023-06-26"
+        },
+        {
+            "name": "vosk",
+            "path": "C:\\users\\crige\\models\\asr\\vosk"
+        },
+        {
+            "name": "test_wavs",
+            "path": "C:\\users\\crige\\models\\asr\\sherpa-onnx-streaming-zipformer-en-2023-06-26\\test_wavs"
+        },
+        {
+            "name": "vosk-model-cn-0.22",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-cn-0.22"
+        },
+        {
+            "name": "vosk-model-en-us-0.22",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-en-us-0.22"
+        },
+        {
+            "name": "vosk-model-en-us-0.22-lgraph",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-en-us-0.22-lgraph"
+        },
+        {
+            "name": "vosk-model-small-cn-0.22",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-cn-0.22"
+        },
+        {
+            "name": "vosk-model-small-en-us-0.15",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
+        },
+        {
+            "name": "am",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-en-us-0.22-lgraph\\am"
+        },
+        {
+            "name": "conf",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-en-us-0.22-lgraph\\conf"
+        },
+        {
+            "name": "graph",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-en-us-0.22-lgraph\\graph"
+        },
+        {
+            "name": "ivector",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-en-us-0.22-lgraph\\ivector"
+        },
+        {
+            "name": "phones",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-en-us-0.22-lgraph\\graph\\phones"
+        },
+        {
+            "name": "am",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-cn-0.22\\am"
+        },
+        {
+            "name": "conf",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-cn-0.22\\conf"
+        },
+        {
+            "name": "graph",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-cn-0.22\\graph"
+        },
+        {
+            "name": "ivector",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-cn-0.22\\ivector"
+        },
+        {
+            "name": "phones",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-cn-0.22\\graph\\phones"
+        },
+        {
+            "name": "am",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15\\am"
+        },
+        {
+            "name": "conf",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15\\conf"
+        },
+        {
+            "name": "graph",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15\\graph"
+        },
+        {
+            "name": "ivector",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15\\ivector"
+        },
+        {
+            "name": "phones",
+            "path": "C:\\users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15\\graph\\phones"
+        },
+        {
+            "name": "argos",
+            "path": "C:\\users\\crige\\models\\translation\\argos"
+        },
+        {
+            "name": "argos-translate",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate"
+        },
+        {
+            "name": "opus-mt",
+            "path": "C:\\users\\crige\\models\\translation\\opus-mt"
+        },
+        {
+            "name": "packages",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages"
+        },
+        {
+            "name": "ar_en",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\ar_en"
+        },
+        {
+            "name": "translate-az_en-1_5",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-az_en-1_5"
+        },
+        {
+            "name": "translate-en_zh-1_9",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-en_zh-1_9"
+        },
+        {
+            "name": "translate-sq_en-1_9",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-sq_en-1_9"
+        },
+        {
+            "name": "model",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\ar_en\\model"
+        },
+        {
+            "name": "stanza",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\ar_en\\stanza"
+        },
+        {
+            "name": "ar",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\ar_en\\stanza\\ar"
+        },
+        {
+            "name": "tokenize",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\ar_en\\stanza\\ar\\tokenize"
+        },
+        {
+            "name": "model",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-az_en-1_5\\model"
+        },
+        {
+            "name": "stanza",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-az_en-1_5\\stanza"
+        },
+        {
+            "name": "az",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-az_en-1_5\\stanza\\az"
+        },
+        {
+            "name": "tokenize",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-az_en-1_5\\stanza\\az\\tokenize"
+        },
+        {
+            "name": "model",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-en_zh-1_9\\model"
+        },
+        {
+            "name": "stanza",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-en_zh-1_9\\stanza"
+        },
+        {
+            "name": "en",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-en_zh-1_9\\stanza\\en"
+        },
+        {
+            "name": "tokenize",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-en_zh-1_9\\stanza\\en\\tokenize"
+        },
+        {
+            "name": "model",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-sq_en-1_9\\model"
+        },
+        {
+            "name": "stanza",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-sq_en-1_9\\stanza"
+        },
+        {
+            "name": "hy",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-sq_en-1_9\\stanza\\hy"
+        },
+        {
+            "name": "tokenize",
+            "path": "C:\\users\\crige\\models\\translation\\argos-translate\\packages\\translate-sq_en-1_9\\stanza\\hy\\tokenize"
+        },
+        {
+            "name": "en-zh",
+            "path": "C:\\users\\crige\\models\\translation\\opus-mt\\en-zh"
+        },
+        {
+            "name": ".cache",
+            "path": "C:\\users\\crige\\models\\translation\\opus-mt\\en-zh\\.cache"
+        },
+        {
+            "name": "huggingface",
+            "path": "C:\\users\\crige\\models\\translation\\opus-mt\\en-zh\\.cache\\huggingface"
+        },
+        {
+            "name": "download",
+            "path": "C:\\users\\crige\\models\\translation\\opus-mt\\en-zh\\.cache\\huggingface\\download"
+        }
+    ]
+}

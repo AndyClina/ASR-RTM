@@ -1,6 +1,6 @@
-# 允许 src/ 及其所有子目录和文件
-!/src/
-!/src/**/*
+# 允许 src/ 及其所有子目录和文件，采用显示忽略规则
+# !/src/
+# !/src/**/*
 
 # 忽略其他无关内容
 .*
@@ -14,18 +14,28 @@
 !keep.txt
 *.ps1
 *.cursorrules
-
-# 显式忽略不需要的目录（如缓存、依赖等）
+*.md
+# 显式忽略不需要的文件夹（如缓存、依赖等）
 __pycache__/
+.bat/
+.clinerules/
+.lingma/
+.git/
+.ps1/
+.pytest_cache/
+.roo/
 .specstory/
 .vscode/
-assets/
+# assets/ 此目录需要代码管理
 # config/ 此目录需要代码管理
 docs/
 logs/
-models/
+# models/ 此目录已移出
 python_examples/
 reports/
 test_tools/
-# tests/ 此目录需要代码管理
+tests/  
+# tests/ 此目录暂不需要代码管理
 transcripts/
+vscode_config_backup/
+# 基本上源代码管理的目录仅是SRC与config，文件是main.py,其它均不需要管理

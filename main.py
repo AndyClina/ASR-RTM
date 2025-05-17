@@ -115,7 +115,8 @@ class RTMApplication:
             self.logger.info(f"项目根目录: {self.project_root}")
 
             # 检查配置文件中的模型设置
-            model_name = self.config['transcription']['default_model']
+            # 默认使用vosk_small模型
+            model_name = self.config.get('transcription', {}).get('default_model', 'vosk_small')
             self.logger.info(f"从配置文件中获取的默认模型名称: {model_name}")
 
             # 检查模型配置是否存在
@@ -152,11 +153,9 @@ class RTMApplication:
                     else:
                         self.logger.error(f"从项目根目录解析的路径也不存在: {abs_path}")
 
-                        # 尝试使用硬编码的绝对路径
+                        # 使用AGENT.md中定义的模型路径
                         hardcoded_paths = [
-                            "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15",
-                            "C:\\Users\\crige\\RealtimeTrans\\vosk-api\\models\\asr\\vosk\\vosk-model-small-en-us-0.15",
-                            "C:\\Users\\crige\\RealtimeTrans\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
+                            "C:\\Users\\crige\\models\\asr\\vosk\\vosk-model-small-en-us-0.15"
                         ]
 
                         for hardcoded_path in hardcoded_paths:
@@ -302,8 +301,18 @@ class RTMApplication:
             model_manager = ASRModelManager()
 
             # 设置模型管理器的当前引擎
-            model_manager.current_engine = self.asr_model
+            # 初始化VoskASR对象作为引擎
+            from src.core.asr.vosk_engine import VoskASR
+            model_path = self.config['models']['asr']['vosk_small'].get('path', '')
+            self.logger.info(f"从配置获取VoskASR模型路径: {model_path}")
+            vosk_engine = VoskASR(model_path)
+            
+            # 设置型号兼容的引擎实例
+            model_manager.current_engine = vosk_engine
             model_manager.model_type = "vosk_small"
+            
+            # 对于后续使用，保存引擎实例
+            self.asr_model = vosk_engine
 
             # 创建主窗口，传入模型管理器和配置管理器
             self.main_window = MainWindow(model_manager, config_manager)

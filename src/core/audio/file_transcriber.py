@@ -53,6 +53,7 @@ class FileTranscriber:
                 sherpa_logger = DummyLogger()
 
             sherpa_logger.info(f"开始文件转录: {file_path}")
+            sherpa_logger.info(f"recognizer类型: {type(recognizer).__name__}")
 
             # 检查是否已经在转录
             if self.is_transcribing:

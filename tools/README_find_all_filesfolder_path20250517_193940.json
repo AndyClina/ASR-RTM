@@ -1,0 +1,17 @@
+{
+    "tool_name": "文件夹搜索工具",
+    "version": "1.0",
+    "created_at": "20250517_193940",
+    "description": "用于搜索指定文件夹下所有的文件夹名称及路径",
+    "usage": "python find_all_folders.py -p <文件夹路径>",
+    "output_format": {
+        "timestamp": "生成时间戳",
+        "total_folders": "找到的文件夹总数",
+        "folders": [
+            {
+                "name": "文件夹名称",
+                "path": "文件夹完整路径"
+            }
+        ]
+    }
+}

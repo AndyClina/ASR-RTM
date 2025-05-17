@@ -34,9 +34,9 @@ class ConfigManager:
         self._ui_config_path = os.path.join('config', 'ui_config.json')
         self._translation_config_path = os.path.join('config', 'translation_config.json')
 
-        # 备份目录
-        self._backup_dir = os.path.join('config', 'backups')
-        os.makedirs(self._backup_dir, exist_ok=True)
+        # 不再需要备份目录
+        # self._backup_dir = os.path.join('config', 'backups')
+        # os.makedirs(self._backup_dir, exist_ok=True)
 
         # 初始化配置
         self._config = {}
@@ -248,8 +248,8 @@ class ConfigManager:
             if self._config is None:
                 self._config = {}
 
-            # 创建备份
-            self._create_backup()
+            # 不再创建备份
+            # self._create_backup()
 
             if section is None or section == 'main':
                 # 保存主配置
@@ -309,71 +309,18 @@ class ConfigManager:
             return False
 
     def _create_backup(self):
-        """创建配置文件备份"""
-        try:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-            # 备份主配置
-            if os.path.exists(self._config_path):
-                backup_path = os.path.join(self._backup_dir, f"config_{timestamp}.json")
-                shutil.copy2(self._config_path, backup_path)
-
-            # 备份插件配置
-            if os.path.exists(self._plugins_path):
-                backup_path = os.path.join(self._backup_dir, f"plugins_{timestamp}.json")
-                shutil.copy2(self._plugins_path, backup_path)
-
-            # 备份UI配置
-            if os.path.exists(self._ui_config_path):
-                backup_path = os.path.join(self._backup_dir, f"ui_config_{timestamp}.json")
-                shutil.copy2(self._ui_config_path, backup_path)
-
-            # 备份翻译配置
-            if os.path.exists(self._translation_config_path):
-                backup_path = os.path.join(self._backup_dir, f"translation_config_{timestamp}.json")
-                shutil.copy2(self._translation_config_path, backup_path)
-
-            # 清理旧备份
-            self._cleanup_old_backups()
-
-            logger.debug("已创建配置文件备份")
-        except Exception as e:
-            logger.warning(f"创建配置文件备份失败: {str(e)}")
+        """创建配置文件备份（已禁用）"""
+        # 此方法已禁用，不再创建备份文件
+        pass
 
     def _cleanup_old_backups(self, max_backups: int = 10):
-        """清理旧备份文件
+        """清理旧备份文件（已禁用）
 
         Args:
             max_backups: 每种配置文件保留的最大备份数量
         """
-        try:
-            # 按类型分组备份文件
-            backup_files = {}
-            for filename in os.listdir(self._backup_dir):
-                if not filename.endswith('.json'):
-                    continue
-
-                file_type = filename.split('_')[0]
-                if file_type not in backup_files:
-                    backup_files[file_type] = []
-
-                backup_files[file_type].append(os.path.join(self._backup_dir, filename))
-
-            # 清理每种类型的旧备份
-            for file_type, files in backup_files.items():
-                if len(files) <= max_backups:
-                    continue
-
-                # 按修改时间排序
-                files.sort(key=lambda x: os.path.getmtime(x))
-
-                # 删除最旧的文件
-                for file_path in files[:-max_backups]:
-                    os.remove(file_path)
-                    logger.debug(f"已删除旧备份文件: {file_path}")
-
-        except Exception as e:
-            logger.warning(f"清理旧备份文件失败: {str(e)}")
+        # 此方法已禁用，不再清理备份文件
+        pass
 
     def get_config(self, *keys, default=None) -> Any:
         """
